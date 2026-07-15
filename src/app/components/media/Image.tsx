@@ -90,6 +90,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       onPointerDown,
       src,
       style,
+      onError,
       ...props
     },
     ref,
@@ -103,14 +104,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     >(undefined);
 
     const lottieProps = props as LottieDotProps;
-    const lottieOnLoad = onLoad
-      ? (event: SyntheticEvent<HTMLCanvasElement>) =>
-          onLoad(event as unknown as SyntheticEvent<HTMLImageElement>)
-      : undefined;
-    const lottieOnPointerDown = onPointerDown
-      ? (event: ReactPointerEvent<HTMLCanvasElement>) =>
-          onPointerDown(event as unknown as ReactPointerEvent<HTMLImageElement>)
-      : undefined;
 
     useEffect(() => {
       let cancelled = false;
@@ -119,6 +112,8 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
         void resolveLottieDataUrl(src).then((result) => {
           if (!cancelled) {
             setResolvedLottieSrc(result);
+            if (onLoad)
+              onLoad({} as React.SyntheticEvent<HTMLImageElement, Event>);
           }
         });
       } else {
@@ -145,8 +140,6 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
           style={style}
           src={resolvedLottieSrc}
           aria-hidden={props["aria-hidden"]}
-          onLoad={lottieOnLoad}
-          onPointerDown={lottieOnPointerDown}
           loop
           autoplay
         />
@@ -167,6 +160,10 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
         style={style}
         onLoad={onLoad}
         onPointerDown={onPointerDown}
+        onError={(...e) => {
+          // Don't send an error until we know whether the image is a Lottie or an ordinary image.
+          if (resolvedLottieSrc !== undefined && onError) onError(...e);
+        }}
         {...props}
         ref={ref}
       />
