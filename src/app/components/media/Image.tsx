@@ -131,6 +131,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       return (
         <DotLottieReact
           {...lottieProps}
+          // TODO: this doesn't work properly for inline emote icons
           className={classNames(
             css.Image,
             isPixelatedRendering(pixelatedImageRendering, info) &&
