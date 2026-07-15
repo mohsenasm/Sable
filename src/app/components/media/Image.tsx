@@ -21,22 +21,47 @@ type LottieDotProps = Omit<
 
 async function resolveLottieDataUrl(src: string): Promise<string | null> {
   const dataUrlMatch = src.match(/^data:([^;,]+)?;base64,(.+)$/i);
-  if (!dataUrlMatch) {
-    return null;
-  }
+  if (dataUrlMatch) {
+    const [, , encoded] = dataUrlMatch;
+    if (typeof encoded !== "string" || encoded.length === 0) {
+      return null;
+    }
 
-  const [, , encoded] = dataUrlMatch;
-  if (typeof encoded !== "string" || encoded.length === 0) {
-    return null;
-  }
+    const bytes = Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0));
 
-  const bytes = Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0));
+    if (bytes.length < 2 || bytes[0] !== 0x1f || bytes[1] !== 0x8b) {
+      return null;
+    }
 
-  if (bytes.length < 2 || bytes[0] !== 0x1f || bytes[1] !== 0x8b) {
+    try {
+      const stream = new Blob([bytes])
+        .stream()
+        .pipeThrough(new DecompressionStream("gzip"));
+      const decompressed = await new Response(stream).arrayBuffer();
+      const jsonText = new TextDecoder().decode(decompressed);
+      const json = JSON.parse(jsonText);
+
+      if (json && typeof json === "object" && "v" in json) {
+        return `data:application/json;charset=utf-8,${encodeURIComponent(jsonText)}`;
+      }
+    } catch {
+      return null;
+    }
+
     return null;
   }
 
   try {
+    const response = await fetch(src, { credentials: "include" });
+    if (!response.ok) {
+      return null;
+    }
+
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (bytes.length < 2 || bytes[0] !== 0x1f || bytes[1] !== 0x8b) {
+      return null;
+    }
+
     const stream = new Blob([bytes])
       .stream()
       .pipeThrough(new DecompressionStream("gzip"));
@@ -90,7 +115,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
     useEffect(() => {
       let cancelled = false;
 
-      if (typeof src === "string" && src.startsWith("data:")) {
+      if (typeof src === "string" && src.length > 0) {
         void resolveLottieDataUrl(src).then((result) => {
           if (!cancelled) {
             setResolvedLottieSrc(result);
@@ -122,6 +147,8 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
           aria-hidden={props["aria-hidden"]}
           onLoad={lottieOnLoad}
           onPointerDown={lottieOnPointerDown}
+          loop
+          autoplay
         />
       );
     }
