@@ -1,10 +1,11 @@
-import { Box, Text } from 'folds';
-import type { Atom } from 'jotai';
-import { atom, useAtomValue } from 'jotai';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import { useMediaAuthentication } from '$hooks/useMediaAuthentication';
-import { mxcUrlToHttp } from '$utils/matrix';
-import * as css from './styles.css';
+import { Box, Text } from "folds";
+import type { Atom } from "jotai";
+import { atom, useAtomValue } from "jotai";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import { useMediaAuthentication } from "$hooks/useMediaAuthentication";
+import { Image as MediaImage } from "$components/media";
+import { mxcUrlToHttp } from "$utils/matrix";
+import * as css from "./styles.css";
 
 export type PreviewData = {
   key: string;
@@ -34,8 +35,8 @@ export function Preview({ previewAtom }: PreviewProps) {
           alignItems="Center"
           justifyContent="Center"
         >
-          {key.startsWith('mxc://') ? (
-            <img
+          {key.startsWith("mxc://") ? (
+            <MediaImage
               className={css.PreviewImg}
               src={mxcUrlToHttp(mx, key, useAuthentication) ?? key}
               alt={shortcode}

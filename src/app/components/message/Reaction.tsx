@@ -1,17 +1,22 @@
-import { useState } from 'react';
-import { Box, Text, as } from 'folds';
-import { sizedIcon, Warning } from '$components/icons/phosphor';
-import classNames from 'classnames';
-import type { MatrixClient, MatrixEvent, Room } from '$types/matrix-sdk';
-import { getHexcodeForEmoji, getShortcodeFor } from '$plugins/emoji';
-import { getMemberDisplayName } from '$utils/room';
-import { eventWithShortcode, getMxIdLocalPart, mxcUrlToHttp } from '$utils/matrix';
-import { useAtomValue } from 'jotai';
-import { nicknamesAtom } from '$state/nicknames';
-import * as css from './Reaction.css';
+import { useState } from "react";
+import { Box, Text, as } from "folds";
+import { sizedIcon, Warning } from "$components/icons/phosphor";
+import classNames from "classnames";
+import type { MatrixClient, MatrixEvent, Room } from "$types/matrix-sdk";
+import { getHexcodeForEmoji, getShortcodeFor } from "$plugins/emoji";
+import { getMemberDisplayName } from "$utils/room";
+import {
+  eventWithShortcode,
+  getMxIdLocalPart,
+  mxcUrlToHttp,
+} from "$utils/matrix";
+import { useAtomValue } from "jotai";
+import { Image as MediaImage } from "$components/media";
+import { nicknamesAtom } from "$state/nicknames";
+import * as css from "./Reaction.css";
 
 export const Reaction = as<
-  'button',
+  "button",
   {
     mx: MatrixClient;
     count: number;
@@ -32,19 +37,22 @@ export const Reaction = as<
       ref={ref}
     >
       <Text className={css.ReactionText} as="span" size="T400">
-        {reaction.startsWith('mxc://') ? (
+        {reaction.startsWith("mxc://") ? (
           (() => {
             if (imgError)
               return (
                 // Image loaded but fetch failed  Eshow a small warning icon so the
                 // reaction button still renders correctly and the user can see
                 // something went wrong rather than a browser broken-image icon.
-                <span title="Failed to load emoji image" aria-label="Failed to load emoji image">
-                  {sizedIcon(Warning, '100', { style: { opacity: 0.5 } })}
+                <span
+                  title="Failed to load emoji image"
+                  aria-label="Failed to load emoji image"
+                >
+                  {sizedIcon(Warning, "100", { style: { opacity: 0.5 } })}
                 </span>
               );
             return (
-              <img
+              <MediaImage
                 className={css.ReactionImg}
                 src={mxcUrlToHttp(mx, reaction, useAuthentication) ?? reaction}
                 alt={reaction}
@@ -71,7 +79,11 @@ type ReactionTooltipMsgProps = {
   events: MatrixEvent[];
 };
 
-export function ReactionTooltipMsg({ room, reaction, events }: ReactionTooltipMsgProps) {
+export function ReactionTooltipMsg({
+  room,
+  reaction,
+  events,
+}: ReactionTooltipMsgProps) {
   const shortCodeEvt = events.find(eventWithShortcode);
   const shortcode =
     shortCodeEvt?.getContent().shortcode ??
@@ -80,9 +92,9 @@ export function ReactionTooltipMsg({ room, reaction, events }: ReactionTooltipMs
   const nicknames = useAtomValue(nicknamesAtom);
   const names = events.map(
     (ev: MatrixEvent) =>
-      getMemberDisplayName(room, ev.getSender() ?? 'Unknown', nicknames) ??
-      getMxIdLocalPart(ev.getSender() ?? 'Unknown') ??
-      'Unknown'
+      getMemberDisplayName(room, ev.getSender() ?? "Unknown", nicknames) ??
+      getMxIdLocalPart(ev.getSender() ?? "Unknown") ??
+      "Unknown",
   );
 
   return (
@@ -92,7 +104,7 @@ export function ReactionTooltipMsg({ room, reaction, events }: ReactionTooltipMs
         <>
           <b>{names[0]}</b>
           <Text as="span" size="Inherit" priority="300">
-            {' and '}
+            {" and "}
           </Text>
           <b>{names[1]}</b>
         </>
@@ -101,11 +113,11 @@ export function ReactionTooltipMsg({ room, reaction, events }: ReactionTooltipMs
         <>
           <b>{names[0]}</b>
           <Text as="span" size="Inherit" priority="300">
-            {', '}
+            {", "}
           </Text>
           <b>{names[1]}</b>
           <Text as="span" size="Inherit" priority="300">
-            {' and '}
+            {" and "}
           </Text>
           <b>{names[2]}</b>
         </>
@@ -114,21 +126,21 @@ export function ReactionTooltipMsg({ room, reaction, events }: ReactionTooltipMs
         <>
           <b>{names[0]}</b>
           <Text as="span" size="Inherit" priority="300">
-            {', '}
+            {", "}
           </Text>
           <b>{names[1]}</b>
           <Text as="span" size="Inherit" priority="300">
-            {', '}
+            {", "}
           </Text>
           <b>{names[2]}</b>
           <Text as="span" size="Inherit" priority="300">
-            {' and '}
+            {" and "}
           </Text>
           <b>{names.length - 3} others</b>
         </>
       )}
       <Text as="span" size="Inherit" priority="300">
-        {' reacted with '}
+        {" reacted with "}
       </Text>
       :<b>{shortcode}</b>:
     </>

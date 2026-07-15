@@ -1,28 +1,32 @@
-import { Box, color, config, Menu, MenuItem } from 'folds';
-import type { MatrixClient } from '$types/matrix-sdk';
-import type { PackImageReader } from '$plugins/custom-emoji';
-import type { IEmoji } from '$plugins/emoji';
-import { mxcUrlToHttp } from '$utils/matrix';
-import type { EmojiItemInfo, GifData } from '$components/emoji-board/types';
-import { EmojiType } from '$components/emoji-board/types';
-import type { CSSProperties, ReactNode } from 'react';
-import { useEffect, useState } from 'react';
-import * as css from './styles.css';
-import { useFavoriteGifs } from '$hooks/useFavoriteGifs';
-import { Star, Eye, EyeSlash, menuIcon } from '$components/icons/phosphor';
-import { MATRIX_SABLE_UNSTABLE_FAVORITE_GIFS } from '$unstable/prefixes';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import { useClientConfig } from '$hooks/useClientConfig';
-import { getKlipyMxcUrl } from '$utils/klipy';
+import { Box, color, config, Menu, MenuItem } from "folds";
+import type { MatrixClient } from "$types/matrix-sdk";
+import type { PackImageReader } from "$plugins/custom-emoji";
+import type { IEmoji } from "$plugins/emoji";
+import { mxcUrlToHttp } from "$utils/matrix";
+import { Image as MediaImage } from "$components/media";
+import type { EmojiItemInfo, GifData } from "$components/emoji-board/types";
+import { EmojiType } from "$components/emoji-board/types";
+import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useState } from "react";
+import * as css from "./styles.css";
+import { useFavoriteGifs } from "$hooks/useFavoriteGifs";
+import { Star, Eye, EyeSlash, menuIcon } from "$components/icons/phosphor";
+import { MATRIX_SABLE_UNSTABLE_FAVORITE_GIFS } from "$unstable/prefixes";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import { useClientConfig } from "$hooks/useClientConfig";
+import { getKlipyMxcUrl } from "$utils/klipy";
 
-const ANIMATED_MIME_TYPES = new Set(['image/gif', 'image/apng']);
+const ANIMATED_MIME_TYPES = new Set(["image/gif", "image/apng"]);
 
 const isAnimatedPackImage = (image: PackImageReader): boolean => {
   const mimetype = image.info?.mimetype?.toLowerCase();
   if (mimetype && ANIMATED_MIME_TYPES.has(mimetype)) return true;
 
   const body = image.body?.toLowerCase();
-  return !!body && (body.endsWith('.gif') || body.endsWith('.webp') || body.endsWith('.apng'));
+  return (
+    !!body &&
+    (body.endsWith(".gif") || body.endsWith(".webp") || body.endsWith(".apng"))
+  );
 };
 
 const getPackImageSrc = (
@@ -31,20 +35,22 @@ const getPackImageSrc = (
   useAuthentication: boolean | undefined,
   saveStickerEmojiBandwidth: boolean,
   width: number,
-  height: number
+  height: number,
 ): string => {
   const preserveAnimation = isAnimatedPackImage(image);
 
   return preserveAnimation || !saveStickerEmojiBandwidth
-    ? (mxcUrlToHttp(mx, image.url, useAuthentication) ?? '')
-    : (mxcUrlToHttp(mx, image.url, useAuthentication, width, height) ?? '');
+    ? (mxcUrlToHttp(mx, image.url, useAuthentication) ?? "")
+    : (mxcUrlToHttp(mx, image.url, useAuthentication, width, height) ?? "");
 };
 
-export const getEmojiItemInfo = (element: Element): EmojiItemInfo | undefined => {
-  const label = element.getAttribute('title');
-  const type = element.getAttribute('data-emoji-type') as EmojiType | undefined;
-  const data = element.getAttribute('data-emoji-data');
-  const shortcode = element.getAttribute('data-emoji-shortcode');
+export const getEmojiItemInfo = (
+  element: Element,
+): EmojiItemInfo | undefined => {
+  const label = element.getAttribute("title");
+  const type = element.getAttribute("data-emoji-type") as EmojiType | undefined;
+  const data = element.getAttribute("data-emoji-data");
+  const shortcode = element.getAttribute("data-emoji-shortcode");
 
   if (type && data && shortcode && label)
     return {
@@ -103,11 +109,18 @@ export function CustomEmojiItem({
       data-emoji-data={image.url}
       data-emoji-shortcode={image.shortcode}
     >
-      <img
+      <MediaImage
         loading="lazy"
         className={css.CustomEmojiImg}
         alt={image.body || image.shortcode}
-        src={getPackImageSrc(mx, image, useAuthentication, saveStickerEmojiBandwidth, 32, 32)}
+        src={getPackImageSrc(
+          mx,
+          image,
+          useAuthentication,
+          saveStickerEmojiBandwidth,
+          32,
+          32,
+        )}
       />
     </Box>
   );
@@ -139,11 +152,18 @@ export function StickerItem({
       data-emoji-data={image.url}
       data-emoji-shortcode={image.shortcode}
     >
-      <img
+      <MediaImage
         loading="lazy"
         className={css.StickerImg}
         alt={image.body || image.shortcode}
-        src={getPackImageSrc(mx, image, useAuthentication, saveStickerEmojiBandwidth, 125, 125)}
+        src={getPackImageSrc(
+          mx,
+          image,
+          useAuthentication,
+          saveStickerEmojiBandwidth,
+          125,
+          125,
+        )}
       />
     </Box>
   );
@@ -170,13 +190,15 @@ export function GifItem({
   const favoritedContent = useFavoriteGifs();
   const clientConfig = useClientConfig();
 
-  const mxcUrl = gif?.url ? getKlipyMxcUrl(gif.url, clientConfig.gifs?.proxyUrl) : '';
+  const mxcUrl = gif?.url
+    ? getKlipyMxcUrl(gif.url, clientConfig.gifs?.proxyUrl)
+    : "";
 
   const [favorited, setFavorited] = useState(
     favoritedContent.gifs.some((v) => {
       const vMxc = getKlipyMxcUrl(v.url, clientConfig.gifs?.proxyUrl);
-      return vMxc === mxcUrl && mxcUrl !== '';
-    })
+      return vMxc === mxcUrl && mxcUrl !== "";
+    }),
   );
   const [isSpoiler, setIsSpoiler] = useState(false);
   const mx = useMatrixClient();
@@ -185,8 +207,8 @@ export function GifItem({
     setFavorited(
       favoritedContent.gifs.some((v) => {
         const vMxc = getKlipyMxcUrl(v.url, clientConfig.gifs?.proxyUrl);
-        return vMxc === mxcUrl && mxcUrl !== '';
-      })
+        return vMxc === mxcUrl && mxcUrl !== "";
+      }),
     );
   }, [favoritedContent, mxcUrl, clientConfig.gifs?.proxyUrl]);
 
@@ -204,13 +226,20 @@ export function GifItem({
       data-emoji-data={data}
       data-emoji-shortcode={shortcode}
       data-gif-data={gif ? JSON.stringify(gif) : undefined}
-      data-gif-spoiler={isSpoiler ? 'true' : 'false'}
+      data-gif-spoiler={isSpoiler ? "true" : "false"}
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
     >
       {children}
       {isHovered && (
-        <Box style={{ padding: config.space.S200, right: 0, top: 0, position: 'absolute' }}>
+        <Box
+          style={{
+            padding: config.space.S200,
+            right: 0,
+            top: 0,
+            position: "absolute",
+          }}
+        >
           <Menu style={{ padding: config.space.S0 }}>
             <Box>
               <MenuItem
@@ -218,7 +247,7 @@ export function GifItem({
                 radii="0"
                 fill="Soft"
                 variant="Secondary"
-                title={favorited ? 'Unfavorite gif' : 'Favorite gif'}
+                title={favorited ? "Unfavorite gif" : "Favorite gif"}
                 onClick={async (e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -244,7 +273,11 @@ export function GifItem({
                     await mx
                       .setAccountData(MATRIX_SABLE_UNSTABLE_FAVORITE_GIFS, {
                         gifs: favoritedContent.gifs.filter(
-                          (v) => getKlipyMxcUrl(v.url, clientConfig.gifs?.proxyUrl) !== mxcUrl
+                          (v) =>
+                            getKlipyMxcUrl(
+                              v.url,
+                              clientConfig.gifs?.proxyUrl,
+                            ) !== mxcUrl,
                         ),
                       })
                       .catch(() => setFavorited(true));
@@ -252,8 +285,10 @@ export function GifItem({
                 }}
               >
                 {menuIcon(Star, {
-                  weight: favorited ? 'fill' : 'regular',
-                  color: favorited ? color.Warning.MainHover : color.Surface.OnContainer,
+                  weight: favorited ? "fill" : "regular",
+                  color: favorited
+                    ? color.Warning.MainHover
+                    : color.Surface.OnContainer,
                 })}
               </MenuItem>
               <MenuItem
@@ -261,7 +296,7 @@ export function GifItem({
                 radii="0"
                 fill="Soft"
                 variant="Secondary"
-                title={isSpoiler ? 'Remove spoiler' : 'Mark as spoiler'}
+                title={isSpoiler ? "Remove spoiler" : "Mark as spoiler"}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -269,7 +304,7 @@ export function GifItem({
                 }}
               >
                 {menuIcon(isSpoiler ? EyeSlash : Eye, {
-                  weight: isSpoiler ? 'fill' : 'regular',
+                  weight: isSpoiler ? "fill" : "regular",
                   color: color.Surface.OnContainer,
                 })}
               </MenuItem>

@@ -1,7 +1,8 @@
-import { Box, Button, Text, config, toRem } from 'folds';
-import { Code, Heart, menuIcon } from '$components/icons/phosphor';
-import { Page, PageHero, PageHeroSection } from '$components/page';
-import LogoSVG from '$public/res/svg/logo.svg';
+import { Box, Button, Text, config, toRem } from "folds";
+import { Code, Heart, menuIcon } from "$components/icons/phosphor";
+import { Page, PageHero, PageHeroSection } from "$components/page";
+import { Image as MediaImage } from "$components/media";
+import LogoSVG from "$public/res/svg/logo.svg";
 
 export function WelcomePage() {
   return (
@@ -14,23 +15,35 @@ export function WelcomePage() {
       >
         <PageHeroSection>
           <PageHero
-            icon={<img width="70" height="70" src={LogoSVG} alt="Sable Logo" />}
+            icon={
+              <MediaImage
+                width="70"
+                height="70"
+                src={LogoSVG}
+                alt="Sable Logo"
+              />
+            }
             title="Welcome to Sable"
             subTitle={
               <span>
-                An almost stable Matrix client.{' '}
+                An almost stable Matrix client.{" "}
                 <a
                   href="https://github.com/SableClient/Sable"
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  {`v${APP_VERSION}${IS_RELEASE_TAG ? '' : `-dev${BUILD_HASH ? ` (${BUILD_HASH})` : ''}`}`}
+                  {`v${APP_VERSION}${IS_RELEASE_TAG ? "" : `-dev${BUILD_HASH ? ` (${BUILD_HASH})` : ""}`}`}
                 </a>
               </span>
             }
           >
             <Box justifyContent="Center">
-              <Box grow="Yes" style={{ maxWidth: toRem(300) }} direction="Column" gap="300">
+              <Box
+                grow="Yes"
+                style={{ maxWidth: toRem(300) }}
+                direction="Column"
+                gap="300"
+              >
                 <Button
                   as="a"
                   href="https://github.com/SableClient/Sable"

@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import { Box, Text, Scroll, Button, config, toRem, Spinner } from 'folds';
-import { Code, Heart, menuIcon } from '$components/icons/phosphor';
-import { PageContent } from '$components/page';
-import { SequenceCard } from '$components/sequence-card';
-import { SettingTile } from '$components/setting-tile';
-import LogoSVG from '$public/res/svg/logo.svg';
-import { clearCacheAndReload } from '$client/initMatrix';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import { SequenceCardStyle } from '$features/settings/styles.css';
-import { Method } from '$types/matrix-sdk';
-import { useOpenBugReportModal } from '$state/hooks/bugReportModal';
-import { SettingsSectionPage } from '../SettingsSectionPage';
+import { useState } from "react";
+import { Box, Text, Scroll, Button, config, toRem, Spinner } from "folds";
+import { Code, Heart, menuIcon } from "$components/icons/phosphor";
+import { PageContent } from "$components/page";
+import { SequenceCard } from "$components/sequence-card";
+import { SettingTile } from "$components/setting-tile";
+import LogoSVG from "$public/res/svg/logo.svg";
+import { clearCacheAndReload } from "$client/initMatrix";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import { SequenceCardStyle } from "$features/settings/styles.css";
+import { Method } from "$types/matrix-sdk";
+import { useOpenBugReportModal } from "$state/hooks/bugReportModal";
+import { SettingsSectionPage } from "../SettingsSectionPage";
 
 type VersionResult =
   | { error: { message: string } }
@@ -24,30 +24,40 @@ export function HomeserverInfo() {
 
   if (!version)
     mx.http
-      .request(Method.Get, '/version', undefined, undefined, {
-        prefix: '/_matrix/federation/v1',
+      .request(Method.Get, "/version", undefined, undefined, {
+        prefix: "/_matrix/federation/v1",
         baseUrl: federationUrl,
       })
       .then((fetched_version) =>
         setVersion({
-          server: fetched_version as { name?: string; version?: string; compiler?: string },
-        })
+          server: fetched_version as {
+            name?: string;
+            version?: string;
+            compiler?: string;
+          },
+        }),
       )
       .catch((error) => {
         if (federationUrl === mx.baseUrl) {
           mx.http
-            .request(Method.Get, '/server', undefined, undefined, {
-              prefix: '/.well-known/matrix',
-              baseUrl: `https://${mx.getSafeUserId().split(':')[1]}`,
+            .request(Method.Get, "/server", undefined, undefined, {
+              prefix: "/.well-known/matrix",
+              baseUrl: `https://${mx.getSafeUserId().split(":")[1]}`,
             })
             .then((well_known) => {
-              const mServer = (well_known as { 'm.server'?: string })['m.server'];
-              const newUrl = mServer ? `https://${mServer.split(':')[0]}` : federationUrl;
+              const mServer = (well_known as { "m.server"?: string })[
+                "m.server"
+              ];
+              const newUrl = mServer
+                ? `https://${mServer.split(":")[0]}`
+                : federationUrl;
               if (newUrl !== federationUrl) {
                 setFederationUrl(newUrl);
               }
             })
-            .catch((error_) => setVersion({ error: { message: String(error_) } }));
+            .catch((error_) =>
+              setVersion({ error: { message: String(error_) } }),
+            );
         } else {
           setVersion({ error: { message: String(error) } });
         }
@@ -65,7 +75,7 @@ export function HomeserverInfo() {
         <SettingTile
           title="Domain"
           focusId="domain"
-          description={mx.getSafeUserId().split(':')[1]}
+          description={mx.getSafeUserId().split(":")[1]}
         />
       </SequenceCard>
       <SequenceCard
@@ -104,7 +114,7 @@ export function HomeserverInfo() {
       )}
       {version ? (
         <>
-          {'error' in version && version.error && (
+          {"error" in version && version.error && (
             <SequenceCard
               className={SequenceCardStyle}
               variant="SurfaceVariant"
@@ -114,7 +124,7 @@ export function HomeserverInfo() {
               {version.error.message}
             </SequenceCard>
           )}
-          {'server' in version && version.server?.name && (
+          {"server" in version && version.server?.name && (
             <SequenceCard
               className={SequenceCardStyle}
               variant="SurfaceVariant"
@@ -128,7 +138,7 @@ export function HomeserverInfo() {
               />
             </SequenceCard>
           )}
-          {'server' in version && version.server?.version && (
+          {"server" in version && version.server?.version && (
             <SequenceCard
               className={SequenceCardStyle}
               variant="SurfaceVariant"
@@ -142,7 +152,7 @@ export function HomeserverInfo() {
               />
             </SequenceCard>
           )}
-          {'server' in version && version.server?.compiler && (
+          {"server" in version && version.server?.compiler && (
             <SequenceCard
               className={SequenceCardStyle}
               variant="SurfaceVariant"
@@ -177,19 +187,23 @@ type AboutProps = {
 };
 export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
   const mx = useMatrixClient();
-  const devLabel = IS_RELEASE_TAG ? '' : '-dev';
-  const buildLabel = BUILD_HASH ? ` (${BUILD_HASH})` : '';
+  const devLabel = IS_RELEASE_TAG ? "" : "-dev";
+  const buildLabel = BUILD_HASH ? ` (${BUILD_HASH})` : "";
   const openBugReport = useOpenBugReportModal();
 
   return (
-    <SettingsSectionPage title="About" requestBack={requestBack} requestClose={requestClose}>
+    <SettingsSectionPage
+      title="About"
+      requestBack={requestBack}
+      requestClose={requestClose}
+    >
       <Box grow="Yes">
         <Scroll hideTrack visibility="Hover">
           <PageContent>
             <Box direction="Column" gap="700">
               <Box gap="400">
                 <Box shrink="No">
-                  <img
+                  <MediaImage
                     style={{ width: toRem(60), height: toRem(60) }}
                     src={LogoSVG}
                     alt="Sable logo"
@@ -214,7 +228,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                       fill="Soft"
                       size="300"
                       radii="300"
-                      before={menuIcon(Code, { weight: 'fill' })}
+                      before={menuIcon(Code, { weight: "fill" })}
                     >
                       <Text size="B300">Source Code</Text>
                     </Button>
@@ -227,7 +241,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                       fill="Soft"
                       size="300"
                       radii="300"
-                      before={menuIcon(Heart, { weight: 'fill' })}
+                      before={menuIcon(Heart, { weight: "fill" })}
                     >
                       <Text size="B300">Support</Text>
                     </Button>
@@ -312,7 +326,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                         >
                           Cinny
                         </a>
-                        {', © '}
+                        {", © "}
                         <a
                           href="https://github.com/ajbura"
                           rel="noreferrer noopener"
@@ -320,7 +334,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                         >
                           Ajay Bura
                         </a>
-                        {', is used under the terms of '}
+                        {", is used under the terms of "}
                         <a
                           href="https://github.com/cinnyapp/cinny/blob/dev/LICENSE"
                           rel="noreferrer noopener"
@@ -333,7 +347,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                     </li>
                     <li>
                       <Text size="T300">
-                        {'The '}
+                        {"The "}
                         <a
                           href="https://github.com/matrix-org/matrix-js-sdk"
                           rel="noreferrer noopener"
@@ -341,7 +355,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                         >
                           matrix-js-sdk
                         </a>
-                        {', © '}
+                        {", © "}
                         <a
                           href="https://matrix.org/foundation"
                           rel="noreferrer noopener"
@@ -349,7 +363,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                         >
                           The Matrix.org Foundation C.I.C
                         </a>
-                        {', is used under the terms of '}
+                        {", is used under the terms of "}
                         <a
                           href="http://www.apache.org/licenses/LICENSE-2.0"
                           rel="noreferrer noopener"
@@ -362,7 +376,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                     </li>
                     <li>
                       <Text size="T300">
-                        {'The '}
+                        {"The "}
                         <a
                           href="https://github.com/mozilla/twemoji-colr"
                           target="_blank"
@@ -370,11 +384,15 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                         >
                           twemoji-colr
                         </a>
-                        {' font, © '}
-                        <a href="https://mozilla.org/" target="_blank" rel="noreferrer noopener">
+                        {" font, © "}
+                        <a
+                          href="https://mozilla.org/"
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
                           Mozilla Foundation
                         </a>
-                        {', is used under the terms of '}
+                        {", is used under the terms of "}
                         <a
                           href="http://www.apache.org/licenses/LICENSE-2.0"
                           target="_blank"
@@ -387,7 +405,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                     </li>
                     <li>
                       <Text size="T300">
-                        {'The '}
+                        {"The "}
                         <a
                           href="https://github.com/twitter/twemoji"
                           target="_blank"
@@ -395,7 +413,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                         >
                           Twemoji
                         </a>
-                        {' emoji art, © '}
+                        {" emoji art, © "}
                         <a
                           href="https://github.com/twitter/twemoji"
                           target="_blank"
@@ -403,7 +421,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                         >
                           Twitter, Inc and other contributors
                         </a>
-                        {', is used under the terms of '}
+                        {", is used under the terms of "}
                         <a
                           href="https://creativecommons.org/licenses/by/4.0/"
                           target="_blank"
@@ -416,19 +434,23 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
                     </li>
                     <li>
                       <Text size="T300">
-                        {'The '}
+                        {"The "}
                         <a
                           href="https://material.io/design/sound/sound-resources.html"
                           target="_blank"
                           rel="noreferrer noopener"
                         >
                           Material sound resources
-                        </a>{' '}
-                        {', © '}
-                        <a href="https://google.com" target="_blank" rel="noreferrer noopener">
+                        </a>{" "}
+                        {", © "}
+                        <a
+                          href="https://google.com"
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
                           Google
                         </a>
-                        {', are used under the terms of '}
+                        {", are used under the terms of "}
                         <a
                           href="https://creativecommons.org/licenses/by/4.0/"
                           target="_blank"

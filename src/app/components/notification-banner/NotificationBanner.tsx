@@ -1,14 +1,15 @@
-import { useAtom } from 'jotai';
-import type { ReactNode } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, IconButton, Text } from 'folds';
-import { sizedIcon, X } from '$components/icons/phosphor';
-import { createLogger } from '$utils/debug';
-import type { InAppBannerNotification } from '$state/sessions';
-import { inAppBannerAtom } from '$state/sessions';
-import * as css from './NotificationBanner.css';
+import { useAtom } from "jotai";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Box, IconButton, Text } from "folds";
+import { sizedIcon, X } from "$components/icons/phosphor";
+import { createLogger } from "$utils/debug";
+import { Image as MediaImage } from "$components/media";
+import type { InAppBannerNotification } from "$state/sessions";
+import { inAppBannerAtom } from "$state/sessions";
+import * as css from "./NotificationBanner.css";
 
-const log = createLogger('NotificationBanner');
+const log = createLogger("NotificationBanner");
 const BANNER_DURATION_MS = 5000;
 
 // Renders body text capped at a max height with a gradient fade when it overflows.
@@ -23,7 +24,12 @@ function BodyText({ text, hovered }: { text: string; hovered: boolean }) {
   }, [text]);
 
   return (
-    <div ref={ref} className={css.BannerBody} data-overflow={overflow} data-hovered={hovered}>
+    <div
+      ref={ref}
+      className={css.BannerBody}
+      data-overflow={overflow}
+      data-hovered={hovered}
+    >
       <Text size="T200" priority="300">
         {text}
       </Text>
@@ -43,7 +49,12 @@ function BodyNode({ node, hovered }: { node: ReactNode; hovered: boolean }) {
   }, [node]);
 
   return (
-    <div ref={ref} className={css.BannerBody} data-overflow={overflow} data-hovered={hovered}>
+    <div
+      ref={ref}
+      className={css.BannerBody}
+      data-overflow={overflow}
+      data-hovered={hovered}
+    >
       <Text size="T200" priority="300">
         {node}
       </Text>
@@ -60,7 +71,9 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
   const [dismissing, setDismissing] = useState(false);
   const [paused, setPaused] = useState(false);
   const dismissedRef = useRef(false);
-  const dismissAnimTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dismissAnimTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const elapsedRef = useRef(0);
 
   // Use a ref to guard against double-dismiss without creating a new callback identity.
@@ -68,7 +81,10 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
     if (dismissedRef.current) return;
     dismissedRef.current = true;
     setDismissing(true);
-    dismissAnimTimerRef.current = setTimeout(() => onDismiss(notification.id), 200);
+    dismissAnimTimerRef.current = setTimeout(
+      () => onDismiss(notification.id),
+      200,
+    );
   }, [notification.id, onDismiss]);
 
   // Auto-dismiss timer  Eonly runs when not paused.
@@ -90,9 +106,10 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
 
   useEffect(
     () => () => {
-      if (dismissAnimTimerRef.current) clearTimeout(dismissAnimTimerRef.current);
+      if (dismissAnimTimerRef.current)
+        clearTimeout(dismissAnimTimerRef.current);
     },
-    []
+    [],
   );
 
   const handleClick = () => {
@@ -112,19 +129,19 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') handleClick();
-        if (e.key === 'Escape') dismiss();
+        if (e.key === "Enter" || e.key === " ") handleClick();
+        if (e.key === "Escape") dismiss();
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {notification.icon && (
-        <img
+        <MediaImage
           src={notification.icon}
           alt=""
           className={css.BannerIcon}
           onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.display = 'none';
+            (e.currentTarget as HTMLImageElement).style.display = "none";
           }}
         />
       )}
@@ -133,9 +150,9 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
           {notification.senderName ?? notification.title}
           {(notification.roomName || notification.serverName) && (
             <span className={css.BannerSubtitle}>
-              {' ('}
+              {" ("}
               {notification.roomName && `#${notification.roomName}`}
-              {notification.roomName && notification.serverName && ', '}
+              {notification.roomName && notification.serverName && ", "}
               {notification.serverName})
             </span>
           )}
@@ -143,7 +160,9 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
         {notification.bodyNode ? (
           <BodyNode node={notification.bodyNode} hovered={paused} />
         ) : (
-          notification.body && <BodyText text={notification.body} hovered={paused} />
+          notification.body && (
+            <BodyText text={notification.body} hovered={paused} />
+          )
         )}
       </div>
       <Box shrink="No">
@@ -158,13 +177,15 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
           }}
           aria-label="Dismiss notification"
         >
-          {sizedIcon(X, '100')}
+          {sizedIcon(X, "100")}
         </IconButton>
       </Box>
       <div
         className={css.ProgressBar}
         data-paused={paused}
-        style={{ animationDuration: `${BANNER_DURATION_MS - elapsedRef.current}ms` }}
+        style={{
+          animationDuration: `${BANNER_DURATION_MS - elapsedRef.current}ms`,
+        }}
       />
     </div>
   );
@@ -180,12 +201,17 @@ export function NotificationBanner() {
   const [queue, setQueue] = useState<InAppBannerNotification[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  log.log('[Banner] Component render, queue length:', queue.length, 'banner:', banner);
+  log.log(
+    "[Banner] Component render, queue length:",
+    queue.length,
+    "banner:",
+    banner,
+  );
 
   // Adjust banner position for iOS keyboard
   useEffect(() => {
     // Only apply on iOS/browsers that support visualViewport
-    if (!('visualViewport' in window)) return undefined;
+    if (!("visualViewport" in window)) return undefined;
 
     const updatePosition = () => {
       const container = containerRef.current;
@@ -202,34 +228,34 @@ export function NotificationBanner() {
         container.style.top = `${keyboardHeight}px`;
       } else {
         // Reset to CSS default (env(safe-area-inset-top))
-        container.style.top = '';
+        container.style.top = "";
       }
     };
 
     const visualViewport = window.visualViewport!;
-    visualViewport.addEventListener('resize', updatePosition);
-    visualViewport.addEventListener('scroll', updatePosition);
+    visualViewport.addEventListener("resize", updatePosition);
+    visualViewport.addEventListener("scroll", updatePosition);
     updatePosition(); // Initial position
 
     return () => {
-      visualViewport.removeEventListener('resize', updatePosition);
-      visualViewport.removeEventListener('scroll', updatePosition);
+      visualViewport.removeEventListener("resize", updatePosition);
+      visualViewport.removeEventListener("scroll", updatePosition);
     };
   }, []);
 
   // Push new notifications into the local queue.
   useEffect(() => {
     if (!banner) return;
-    log.log('[Banner] New banner from atom:', banner.id, banner.title);
+    log.log("[Banner] New banner from atom:", banner.id, banner.title);
     setQueue((prev) => {
       // De-duplicate by id
       if (prev.some((n) => n.id === banner.id)) {
-        log.log('[Banner] Duplicate banner, skipping:', banner.id);
+        log.log("[Banner] Duplicate banner, skipping:", banner.id);
         return prev;
       }
       // Keep at most 3 visible at once  Edrop the oldest if over limit.
       const next = [...prev, banner];
-      log.log('[Banner] Adding to queue, new length:', next.length);
+      log.log("[Banner] Adding to queue, new length:", next.length);
       return next.length > 3 ? next.slice(next.length - 3) : next;
     });
     // Clear the atom so the same notification doesn't re-enqueue on re-render.
@@ -237,18 +263,23 @@ export function NotificationBanner() {
   }, [banner, setBanner]);
 
   const handleDismiss = (id: string) => {
-    log.log('[Banner] Dismissing banner:', id);
+    log.log("[Banner] Dismissing banner:", id);
     setQueue((prev) => prev.filter((n) => n.id !== id));
   };
 
   if (queue.length === 0) {
-    log.log('[Banner] No banners in queue, returning null');
+    log.log("[Banner] No banners in queue, returning null");
     return null;
   }
 
-  log.log('[Banner] Rendering', queue.length, 'banners');
+  log.log("[Banner] Rendering", queue.length, "banners");
   return (
-    <div ref={containerRef} className={css.BannerContainer} aria-live="polite" aria-atomic="false">
+    <div
+      ref={containerRef}
+      className={css.BannerContainer}
+      aria-live="polite"
+      aria-atomic="false"
+    >
       {queue.map((n) => (
         <BannerItem key={n.id} notification={n} onDismiss={handleDismiss} />
       ))}

@@ -1,7 +1,7 @@
-import type { MouseEventHandler } from 'react';
-import { useEffect, useRef, useState } from 'react';
-import FileSaver from 'file-saver';
-import classNames from 'classnames';
+import type { MouseEventHandler } from "react";
+import { useEffect, useRef, useState } from "react";
+import FileSaver from "file-saver";
+import classNames from "classnames";
 import {
   Box,
   Chip,
@@ -15,7 +15,7 @@ import {
   as,
   config,
   toRem,
-} from 'folds';
+} from "folds";
 import {
   ArrowLeft,
   ArrowsClockwise,
@@ -26,17 +26,21 @@ import {
   menuIcon,
   phosphorSizeRem,
   sizedIcon,
-} from '$components/icons/phosphor';
-import { useImageGestures } from '$hooks/useImageGestures';
-import { useSetting } from '$state/hooks/settings';
-import { isPixelatedRendering, settingsAtom } from '$state/settings';
-import { downloadMedia } from '$utils/matrix';
-import * as css from './ImageViewer.css';
-import type { IImageInfo } from '$types/matrix/common';
-import { CheckerboardIcon, CopyIcon, DownloadIcon } from '@phosphor-icons/react';
-import FocusTrap from 'focus-trap-react';
-import { stopPropagation } from '$utils/keyboard';
-import { copyImageToClipboard } from '$utils/dom';
+} from "$components/icons/phosphor";
+import { useImageGestures } from "$hooks/useImageGestures";
+import { useSetting } from "$state/hooks/settings";
+import { isPixelatedRendering, settingsAtom } from "$state/settings";
+import { downloadMedia } from "$utils/matrix";
+import * as css from "./ImageViewer.css";
+import type { IImageInfo } from "$types/matrix/common";
+import {
+  CheckerboardIcon,
+  CopyIcon,
+  DownloadIcon,
+} from "@phosphor-icons/react";
+import FocusTrap from "focus-trap-react";
+import { stopPropagation } from "$utils/keyboard";
+import { copyImageToClipboard } from "$utils/dom";
 
 export type ImageViewerProps = {
   alt: string;
@@ -45,16 +49,19 @@ export type ImageViewerProps = {
   info?: IImageInfo;
 };
 
-export const ImageViewer = as<'div', ImageViewerProps>(
+export const ImageViewer = as<"div", ImageViewerProps>(
   ({ className, alt, src, requestClose, info, ...props }, ref) => {
     const zoomInputRef = useRef<HTMLInputElement>(null);
-    const [pixelatedImageRendering] = useSetting(settingsAtom, 'pixelatedImageRendering');
+    const [pixelatedImageRendering] = useSetting(
+      settingsAtom,
+      "pixelatedImageRendering",
+    );
 
     const [isImageReady, setIsImageReady] = useState(false);
     const [isEditingZoom, setIsEditingZoom] = useState(false);
-    const [zoomInput, setZoomInput] = useState('100');
+    const [zoomInput, setZoomInput] = useState("100");
     const [isPixelated, setIsPixelated] = useState(
-      isPixelatedRendering(pixelatedImageRendering, info)
+      isPixelatedRendering(pixelatedImageRendering, info),
     );
 
     const {
@@ -76,7 +83,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
       setIsImageReady(false);
       enableResizeWithWindow();
       setIsEditingZoom(false);
-      setZoomInput('100');
+      setZoomInput("100");
       if (imageRef.current) {
         imageRef.current = null;
       }
@@ -106,7 +113,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
     const handleContextMenu: MouseEventHandler<HTMLDivElement> = (evt) => {
       if (evt.altKey || !window.getSelection()?.isCollapsed) return;
       const tag = (evt.target as HTMLElement).tagName;
-      if (typeof tag === 'string' && tag.toLowerCase() === 'a') return;
+      if (typeof tag === "string" && tag.toLowerCase() === "a") return;
 
       evt.preventDefault();
       setMenuAnchor({
@@ -121,7 +128,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
       <>
         <PopOut
           anchor={menuAnchor}
-          align={menuAnchor?.width === 0 ? 'Start' : 'End'}
+          align={menuAnchor?.width === 0 ? "Start" : "End"}
           offset={menuAnchor?.width === 0 ? 0 : undefined}
           content={
             <FocusTrap
@@ -132,8 +139,15 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 escapeDeactivates: stopPropagation,
               }}
             >
-              <Menu variant="Surface" style={{ maxWidth: toRem(160), width: '100vw' }}>
-                <Box direction="Column" gap="100" style={{ padding: config.space.S100 }}>
+              <Menu
+                variant="Surface"
+                style={{ maxWidth: toRem(160), width: "100vw" }}
+              >
+                <Box
+                  direction="Column"
+                  gap="100"
+                  style={{ padding: config.space.S100 }}
+                >
                   <MenuItem
                     as="button"
                     radii="300"
@@ -177,7 +191,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
           <Header className={css.ImageViewerHeader} size="400">
             <Box grow="Yes" alignItems="Center" gap="200">
               <IconButton size="300" radii="300" onClick={requestClose}>
-                {sizedIcon(ArrowLeft, '200')}
+                {sizedIcon(ArrowLeft, "200")}
               </IconButton>
               <Text size="T300" truncate>
                 {alt}
@@ -190,11 +204,11 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 radii="Pill"
                 onClick={() => setIsPixelated(!isPixelated)}
                 aria-label="Toggle Pixelation"
-                title={`Turn ${isPixelated ? 'Anti-aliasing' : 'Pixelation'} on`}
+                title={`Turn ${isPixelated ? "Anti-aliasing" : "Pixelation"} on`}
               >
                 <CheckerboardIcon
                   size={phosphorSizeRem(20)}
-                  weight={isPixelated ? 'duotone' : 'fill'}
+                  weight={isPixelated ? "duotone" : "fill"}
                 />
               </IconButton>
               <IconButton
@@ -203,7 +217,8 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                   // Only show when the image isn't already larger than the container
                   // and isn't already at 100% zoom
                   // (Otherwise, the Reset Zoom button does the same thing)
-                  display: fitRatio !== 1 && transforms.zoom !== 1 ? 'flex' : 'none',
+                  display:
+                    fitRatio !== 1 && transforms.zoom !== 1 ? "flex" : "none",
                 }}
                 size="300"
                 radii="Pill"
@@ -213,16 +228,18 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 aria-label="View Original Size"
                 title="View Original Size"
               >
-                {sizedIcon(Image, '200')}
+                {sizedIcon(Image, "200")}
               </IconButton>
               <IconButton
                 variant="Surface"
                 style={{
                   // Only show when the image has had any transforms applied (zoom or pan)
                   display:
-                    transforms.zoom !== fitRatio || transforms.pan.x !== 0 || transforms.pan.y !== 0
-                      ? 'flex'
-                      : 'none',
+                    transforms.zoom !== fitRatio ||
+                    transforms.pan.x !== 0 ||
+                    transforms.pan.y !== 0
+                      ? "flex"
+                      : "none",
                 }}
                 size="300"
                 radii="Pill"
@@ -234,10 +251,10 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 aria-label="Reset Zoom"
                 title="Zoom to Fill Container"
               >
-                {sizedIcon(ArrowsClockwise, '200')}
+                {sizedIcon(ArrowsClockwise, "200")}
               </IconButton>
               <IconButton
-                variant={transforms.zoom < 1 ? 'Success' : 'SurfaceVariant'}
+                variant={transforms.zoom < 1 ? "Success" : "SurfaceVariant"}
                 outlined={transforms.zoom < 1}
                 size="300"
                 radii="Pill"
@@ -245,7 +262,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 aria-label="Zoom Out"
                 title="Zoom Out"
               >
-                {sizedIcon(Minus, '50')}
+                {sizedIcon(Minus, "50")}
               </IconButton>
               <Chip
                 variant="SurfaceVariant"
@@ -254,7 +271,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                   // For zoom levels below 100%, keep the pill at the same size as it would be at 100% zoom.
                   // This prevents the Zoom Out button from moving from the pill changing size.
                   // 4em should be generous enough to fit without manually determining the width of the text.
-                  minWidth: '4em',
+                  minWidth: "4em",
                 }}
                 onClick={() => {
                   setZoomInput(Math.round(transforms.zoom * 100).toString());
@@ -265,8 +282,8 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 <Text
                   size="B300"
                   style={{
-                    cursor: 'text',
-                    margin: 'auto',
+                    cursor: "text",
+                    margin: "auto",
                   }}
                 >
                   {isEditingZoom ? (
@@ -288,7 +305,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                           setIsEditingZoom(false);
                         }}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             const next = parseInt(zoomInput, 10);
                             if (!Number.isNaN(next)) {
                               setZoom(next / 100);
@@ -305,7 +322,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 </Text>
               </Chip>
               <IconButton
-                variant={transforms.zoom > 1 ? 'Success' : 'SurfaceVariant'}
+                variant={transforms.zoom > 1 ? "Success" : "SurfaceVariant"}
                 outlined={transforms.zoom > 1}
                 size="300"
                 radii="Pill"
@@ -313,13 +330,13 @@ export const ImageViewer = as<'div', ImageViewerProps>(
                 aria-label="Zoom In"
                 title="Zoom In"
               >
-                {sizedIcon(Plus, '50')}
+                {sizedIcon(Plus, "50")}
               </IconButton>
               <Chip
                 variant="Primary"
                 onClick={handleDownload}
                 radii="300"
-                before={sizedIcon(Download, '50')}
+                before={sizedIcon(Download, "50")}
                 outlined
               >
                 <Text size="B300">Download</Text>
@@ -334,12 +351,15 @@ export const ImageViewer = as<'div', ImageViewerProps>(
             data-gestures="ignore"
             justifyContent="Center"
             alignItems="Center"
-            style={{ overflow: 'hidden', touchAction: 'none', cursor }}
+            style={{ overflow: "hidden", touchAction: "none", cursor }}
             onPointerDown={onPointerDown}
             onContextMenu={handleContextMenu}
           >
-            <img
-              className={classNames(css.ImageViewerImg, isPixelated && css.ImageViewerImgPixelated)}
+            <MediaImage
+              className={classNames(
+                css.ImageViewerImg,
+                isPixelated && css.ImageViewerImgPixelated,
+              )}
               draggable={false}
               data-gestures="ignore"
               style={{
@@ -359,5 +379,5 @@ export const ImageViewer = as<'div', ImageViewerProps>(
         </Box>
       </>
     );
-  }
+  },
 );

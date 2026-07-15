@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
+import { useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import {
   Avatar,
   Box,
@@ -14,36 +14,37 @@ import {
   toRem,
   Chip,
   config,
-} from 'folds';
-import classNames from 'classnames';
-import FocusTrap from 'focus-trap-react';
-import colorMXID from '$utils/colorMXID';
-import { getMxIdLocalPart } from '$utils/matrix';
-import { BreakWord, LineClamp3 } from '$styles/Text.css';
-import type { UserPresence } from '$hooks/useUserPresence';
-import { stopPropagation } from '$utils/keyboard';
-import { useRoom } from '$hooks/useRoom';
-import { useSableCosmetics } from '$hooks/useSableCosmetics';
-import { useNickname } from '$hooks/useNickname';
-import { useBlobCache } from '$hooks/useBlobCache';
-import { ImageViewer } from '$components/image-viewer';
-import { AvatarPresence, PresenceBadge } from '$components/presence';
-import { UserAvatar } from '$components/user-avatar';
+} from "folds";
+import classNames from "classnames";
+import FocusTrap from "focus-trap-react";
+import colorMXID from "$utils/colorMXID";
+import { getMxIdLocalPart } from "$utils/matrix";
+import { BreakWord, LineClamp3 } from "$styles/Text.css";
+import type { UserPresence } from "$hooks/useUserPresence";
+import { stopPropagation } from "$utils/keyboard";
+import { useRoom } from "$hooks/useRoom";
+import { useSableCosmetics } from "$hooks/useSableCosmetics";
+import { useNickname } from "$hooks/useNickname";
+import { useBlobCache } from "$hooks/useBlobCache";
+import { ImageViewer } from "$components/image-viewer";
+import { Image as MediaImage } from "$components/media";
+import { AvatarPresence, PresenceBadge } from "$components/presence";
+import { UserAvatar } from "$components/user-avatar";
 import {
   CaretDown,
   CaretUp,
   Check,
   profileIcon,
   userFallbackIcon,
-} from '$components/icons/phosphor';
-import { ClientSideHoverFreeze } from '$components/ClientSideHoverFreeze';
-import { useUserProfile } from '$hooks/useUserProfile';
-import { shadeColor, areColorsTooSimilar } from '$utils/shadeColor';
-import * as css from './styles.css';
-import { copyToClipboard } from '$utils/dom';
-import { useTimeoutToggle } from '$hooks/useTimeoutToggle';
-import { CopyIcon, CrossIcon } from '@phosphor-icons/react';
-import { useOpenSettings } from '$features/settings';
+} from "$components/icons/phosphor";
+import { ClientSideHoverFreeze } from "$components/ClientSideHoverFreeze";
+import { useUserProfile } from "$hooks/useUserProfile";
+import { shadeColor, areColorsTooSimilar } from "$utils/shadeColor";
+import * as css from "./styles.css";
+import { copyToClipboard } from "$utils/dom";
+import { useTimeoutToggle } from "$hooks/useTimeoutToggle";
+import { CopyIcon, CrossIcon } from "@phosphor-icons/react";
+import { useOpenSettings } from "$features/settings";
 
 type UserHeroProps = {
   userId: string;
@@ -75,16 +76,23 @@ export function UserHero({
   const isAnimated = useMemo(() => {
     if (!coverUrl) return false;
     const url = coverUrl.toLowerCase();
-    const isStatic = url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png');
+    const isStatic =
+      url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".png");
 
-    return !isStatic || url.includes('gif') || url.includes('webp');
+    return !isStatic || url.includes("gif") || url.includes("webp");
   }, [coverUrl]);
 
-  const bannerClasses = classNames(css.UserHeroCover, isFallbackCover && css.UserHeroCoverFallback);
+  const bannerClasses = classNames(
+    css.UserHeroCover,
+    isFallbackCover && css.UserHeroCoverFallback,
+  );
 
   const renderCoverImage = () => (
-    <img
-      className={classNames(css.UserHeroCover, isFallbackCover && css.UserHeroCoverFallback)}
+    <MediaImage
+      className={classNames(
+        css.UserHeroCover,
+        isFallbackCover && css.UserHeroCoverFallback,
+      )}
       src={coverUrl}
       alt={`${userId} cover`}
       draggable="false"
@@ -95,19 +103,29 @@ export function UserHero({
   const isExpandable = (status?.length ?? 0) > 70;
 
   const fetchedProfile = useUserProfile(userId);
-  const backgroundColor = fetchedProfile.heroColor ?? standardColors.Surface.Container;
+  const backgroundColor =
+    fetchedProfile.heroColor ?? standardColors.Surface.Container;
   const fetchedBrightness = fetchedProfile?.heroBrightness;
-  const isBackgroundDark = fetchedBrightness ? fetchedBrightness === 'dark' : undefined;
+  const isBackgroundDark = fetchedBrightness
+    ? fetchedBrightness === "dark"
+    : undefined;
   const cardColor =
-    shadeColor(backgroundColor, isBackgroundDark ? -80 : 80) ?? standardColors.Background.Container;
-  const innerColor = shadeColor(backgroundColor, isBackgroundDark ? -50 : 50) ?? backgroundColor;
+    shadeColor(backgroundColor, isBackgroundDark ? -80 : 80) ??
+    standardColors.Background.Container;
+  const innerColor =
+    shadeColor(backgroundColor, isBackgroundDark ? -50 : 50) ?? backgroundColor;
   const statusSurfaceColor =
-    shadeColor(innerColor, fetchedBrightness === 'light' ? -14 : 32) ?? cardColor;
+    shadeColor(innerColor, fetchedBrightness === "light" ? -14 : 32) ??
+    cardColor;
   const textColor =
-    ((fetchedBrightness === 'dark' || areColorsTooSimilar('#000000', cardColor)) && '#FFFFFF') ||
-    ((fetchedBrightness === 'light' || areColorsTooSimilar('#FFFFFF', cardColor)) && '#000000') ||
+    ((fetchedBrightness === "dark" ||
+      areColorsTooSimilar("#000000", cardColor)) &&
+      "#FFFFFF") ||
+    ((fetchedBrightness === "light" ||
+      areColorsTooSimilar("#FFFFFF", cardColor)) &&
+      "#000000") ||
     undefined;
-  const statusHoverBrightness = fetchedBrightness === 'light' ? 0.94 : 1.08;
+  const statusHoverBrightness = fetchedBrightness === "light" ? 0.94 : 1.08;
   const openSettings = useOpenSettings();
 
   return (
@@ -141,7 +159,7 @@ export function UserHero({
             badge={presence && <PresenceBadge presence={presence.presence} />}
           >
             <Avatar
-              as={avatarUrl ? 'button' : 'div'}
+              as={avatarUrl ? "button" : "div"}
               onClick={avatarUrl ? () => setViewAvatar(avatarUrl) : undefined}
               className={css.UserHeroAvatar}
               size="500"
@@ -151,7 +169,7 @@ export function UserHero({
                 userId={userId}
                 src={avatarUrl}
                 alt={userId}
-                renderFallback={() => userFallbackIcon('hero')}
+                renderFallback={() => userFallbackIcon("hero")}
               />
             </Avatar>
           </AvatarPresence>
@@ -168,7 +186,9 @@ export function UserHero({
                 >
                   <Modal
                     size="500"
-                    onContextMenu={(evt: React.MouseEvent) => evt.stopPropagation()}
+                    onContextMenu={(evt: React.MouseEvent) =>
+                      evt.stopPropagation()
+                    }
                   >
                     <ImageViewer
                       src={viewAvatar}
@@ -186,47 +206,57 @@ export function UserHero({
             <Tooltip
               radii="400"
               variant="Surface"
-              role={allowEditing ? 'button' : undefined}
+              role={allowEditing ? "button" : undefined}
               onClick={
                 allowEditing
-                  ? () => openSettings('account', 'status')
+                  ? () => openSettings("account", "status")
                   : isExpandable
                     ? () => setIsFullStatus(!isFullStatus)
                     : undefined
               }
               className={classNames(
                 css.UserHeroStatusTooltip,
-                isExpandable && css.UserHeroStatusTooltipInteractive
+                isExpandable && css.UserHeroStatusTooltipInteractive,
               )}
               style={{
                 maxHeight: isFullStatus ? toRem(105) : toRem(48),
-                cursor: allowEditing || isExpandable ? 'pointer' : 'default',
-                display: 'flex',
-                width: 'fit-content',
+                cursor: allowEditing || isExpandable ? "pointer" : "default",
+                display: "flex",
+                width: "fit-content",
                 padding: `${toRem(8)} ${toRem(12)}`,
                 backgroundColor: statusSurfaceColor,
                 color: textColor,
-                borderStyle: 'none',
+                borderStyle: "none",
                 borderWidth: 0,
-                outline: 'none',
-                boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.05)',
+                outline: "none",
+                boxShadow: "inset 0 1px 1px rgba(0, 0, 0, 0.05)",
                 ...({
-                  '--user-hero-status-hover-brightness': String(statusHoverBrightness),
+                  "--user-hero-status-hover-brightness": String(
+                    statusHoverBrightness,
+                  ),
                 } as CSSProperties),
               }}
             >
               <Box
                 direction="Row"
                 gap="100"
-                style={{ height: '100%', maxWidth: allowEditing ? toRem(210) : '100%' }}
+                style={{
+                  height: "100%",
+                  maxWidth: allowEditing ? toRem(210) : "100%",
+                }}
               >
                 {isFullStatus ? (
-                  <Scroll visibility="Hover" hideTrack style={{ height: '100%', flex: 1 }}>
+                  <Scroll
+                    visibility="Hover"
+                    hideTrack
+                    style={{ height: "100%", flex: 1 }}
+                  >
                     <Text
                       size="T200"
                       style={{
-                        wordBreak: 'break-word',
-                        fontStyle: allowEditing && !status ? 'italic' : 'normal',
+                        wordBreak: "break-word",
+                        fontStyle:
+                          allowEditing && !status ? "italic" : "normal",
                       }}
                       truncate={allowEditing}
                     >
@@ -238,11 +268,14 @@ export function UserHero({
                     size="T200"
                     style={{
                       flex: 1,
-                      wordBreak: 'break-word',
+                      wordBreak: "break-word",
                       WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      opacity: allowEditing && !status ? config.opacity.Placeholder : 1,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      opacity:
+                        allowEditing && !status
+                          ? config.opacity.Placeholder
+                          : 1,
                     }}
                     truncate={allowEditing}
                   >
@@ -256,7 +289,7 @@ export function UserHero({
                     alignItems="Center"
                     justifyContent="Center"
                     style={{
-                      alignSelf: isFullStatus ? 'flex-start' : 'center',
+                      alignSelf: isFullStatus ? "flex-start" : "center",
                     }}
                   >
                     {profileIcon(isFullStatus ? CaretUp : CaretDown)}
@@ -312,7 +345,11 @@ function UserHeroNameInner({
           {shownName}
         </Text>
         {nick && (
-          <Text size="T200" priority="300" title={`Nickname (real: ${username})`}>
+          <Text
+            size="T200"
+            priority="300"
+            title={`Nickname (real: ${username})`}
+          >
             (nick)
           </Text>
         )}
@@ -327,7 +364,11 @@ function UserHeroNameInner({
             } else isSuccess.current = false;
             setCopied();
           }}
-          style={{ backgroundColor: 'transparent', color: 'inherit', padding: '0' }}
+          style={{
+            backgroundColor: "transparent",
+            color: "inherit",
+            padding: "0",
+          }}
           onPointerEnter={() => setIsHovered(true)}
           onPointerLeave={() => setIsHovered(false)}
           before={
@@ -351,7 +392,12 @@ function UserHeroNameInner({
   );
 }
 
-export function UserHeroName({ displayName, userId, server, customHeroCards }: UserHeroNameProps) {
+export function UserHeroName({
+  displayName,
+  userId,
+  server,
+  customHeroCards,
+}: UserHeroNameProps) {
   const username = getMxIdLocalPart(userId);
   const nick = useNickname(userId);
 
@@ -370,7 +416,11 @@ export function UserHeroName({ displayName, userId, server, customHeroCards }: U
   );
 }
 
-export function GlobalUserHeroName({ displayName, userId, server }: UserHeroNameProps) {
+export function GlobalUserHeroName({
+  displayName,
+  userId,
+  server,
+}: UserHeroNameProps) {
   const username = getMxIdLocalPart(userId);
   const nick = useNickname(userId);
   const profile = useUserProfile(userId);

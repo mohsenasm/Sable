@@ -1,14 +1,33 @@
-import type { ReactNode } from 'react';
-import { Box, Scroll, Line, as, TooltipProvider, Tooltip, Text, IconButton } from 'folds';
-import classNames from 'classnames';
-import { sizedIcon, Image, type PhosphorIcon } from '$components/icons/phosphor';
-import * as css from './styles.css';
+import type { ReactNode } from "react";
+import {
+  Box,
+  Scroll,
+  Line,
+  as,
+  TooltipProvider,
+  Tooltip,
+  Text,
+  IconButton,
+} from "folds";
+import classNames from "classnames";
+import { Image as MediaImage } from "$components/media";
+import {
+  sizedIcon,
+  Image as ImageIcon,
+  type PhosphorIcon,
+} from "$components/icons/phosphor";
+import * as css from "./styles.css";
 
 export function Sidebar({ children }: { children: ReactNode }) {
   return (
     <Box className={css.Sidebar} shrink="No">
       <Scroll size="0">
-        <Box className={css.SidebarContent} direction="Column" alignItems="Center" gap="100">
+        <Box
+          className={css.SidebarContent}
+          direction="Column"
+          alignItems="Center"
+          gap="100"
+        >
           {children}
         </Box>
       </Scroll>
@@ -16,18 +35,20 @@ export function Sidebar({ children }: { children: ReactNode }) {
   );
 }
 
-export const SidebarStack = as<'div'>(({ className, children, ...props }, ref) => (
-  <Box
-    className={classNames(css.SidebarStack, className)}
-    direction="Column"
-    alignItems="Center"
-    gap="100"
-    {...props}
-    ref={ref}
-  >
-    {children}
-  </Box>
-));
+export const SidebarStack = as<"div">(
+  ({ className, children, ...props }, ref) => (
+    <Box
+      className={classNames(css.SidebarStack, className)}
+      direction="Column"
+      alignItems="Center"
+      gap="100"
+      {...props}
+      ref={ref}
+    >
+      {children}
+    </Box>
+  ),
+);
 export function SidebarDivider() {
   return <Line className={css.SidebarDivider} size="300" variant="Surface" />;
 }
@@ -88,7 +109,7 @@ export function GroupIcon<T extends string>({
 }: GroupIconProps<T>) {
   return (
     <SidebarBtn active={active} id={id} label={label} onClick={onClick}>
-      {sizedIcon(icon, '200', { filled: active })}
+      {sizedIcon(icon, "200", { filled: active })}
     </SidebarBtn>
   );
 }
@@ -110,9 +131,9 @@ export function ImageGroupIcon<T extends string>({
   return (
     <SidebarBtn active={active} id={id} label={label} onClick={onClick}>
       {url ? (
-        <img className={css.SidebarBtnImg} src={url} alt={label} />
+        <MediaImage className={css.SidebarBtnImg} src={url} alt={label} />
       ) : (
-        sizedIcon(Image, '200', { filled: active })
+        sizedIcon(ImageIcon, "200", { filled: active })
       )}
     </SidebarBtn>
   );

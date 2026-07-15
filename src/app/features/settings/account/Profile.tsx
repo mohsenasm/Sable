@@ -1,5 +1,5 @@
-import type { ChangeEventHandler, FormEventHandler } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ChangeEventHandler, FormEventHandler } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Text,
@@ -15,41 +15,48 @@ import {
   Header,
   config,
   Spinner,
-} from 'folds';
-import { composerIcon, menuIcon, Star, Sun, X } from '$components/icons/phosphor';
-import FocusTrap from 'focus-trap-react';
-import { useSetAtom } from 'jotai';
-import { SequenceCard } from '$components/sequence-card';
-import { SettingTile } from '$components/setting-tile';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import type { UserProfile, MSC4440Bio } from '$hooks/useUserProfile';
-import { useUserProfile } from '$hooks/useUserProfile';
-import { getMxIdLocalPart, mxcUrlToHttp } from '$utils/matrix';
-import { UserAvatar } from '$components/user-avatar';
-import { useMediaAuthentication } from '$hooks/useMediaAuthentication';
-import { nameInitials } from '$utils/common';
-import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
-import { useFilePicker } from '$hooks/useFilePicker';
-import { useObjectURL } from '$hooks/useObjectURL';
-import { stopPropagation } from '$utils/keyboard';
-import { toSettingsFocusIdPart } from '$features/settings/settingsLink';
-import { ImageEditor } from '$components/image-editor';
-import { ModalWide } from '$styles/Modal.css';
-import type { UploadSuccess } from '$state/upload';
-import { createUploadAtom } from '$state/upload';
-import { CompactUploadCardRenderer } from '$components/upload-card';
-import { useCapabilities } from '$hooks/useCapabilities';
-import { profilesCacheAtom } from '$state/userRoomProfile';
-import { SequenceCardStyle } from '$features/settings/styles.css';
-import { useUserPresence } from '$hooks/useUserPresence';
-import type { MSC1767Text } from '$types/matrix/common';
-import { TimezoneEditor } from './TimezoneEditor';
-import { PronounEditor } from './PronounEditor';
-import { BioEditor } from './BioEditor';
-import { NameColorEditor } from './NameColorEditor';
-import { StatusEditor } from './StatusEditor';
-import { AnimalCosmetics } from './AnimalCosmetics';
-import * as prefix from '$unstable/prefixes';
+} from "folds";
+import {
+  composerIcon,
+  menuIcon,
+  Star,
+  Sun,
+  X,
+} from "$components/icons/phosphor";
+import FocusTrap from "focus-trap-react";
+import { useSetAtom } from "jotai";
+import { SequenceCard } from "$components/sequence-card";
+import { SettingTile } from "$components/setting-tile";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import type { UserProfile, MSC4440Bio } from "$hooks/useUserProfile";
+import { useUserProfile } from "$hooks/useUserProfile";
+import { getMxIdLocalPart, mxcUrlToHttp } from "$utils/matrix";
+import { UserAvatar } from "$components/user-avatar";
+import { useMediaAuthentication } from "$hooks/useMediaAuthentication";
+import { nameInitials } from "$utils/common";
+import { AsyncStatus, useAsyncCallback } from "$hooks/useAsyncCallback";
+import { useFilePicker } from "$hooks/useFilePicker";
+import { useObjectURL } from "$hooks/useObjectURL";
+import { stopPropagation } from "$utils/keyboard";
+import { toSettingsFocusIdPart } from "$features/settings/settingsLink";
+import { ImageEditor } from "$components/image-editor";
+import { ModalWide } from "$styles/Modal.css";
+import type { UploadSuccess } from "$state/upload";
+import { createUploadAtom } from "$state/upload";
+import { CompactUploadCardRenderer } from "$components/upload-card";
+import { Image as MediaImage } from "$components/media";
+import { useCapabilities } from "$hooks/useCapabilities";
+import { profilesCacheAtom } from "$state/userRoomProfile";
+import { SequenceCardStyle } from "$features/settings/styles.css";
+import { useUserPresence } from "$hooks/useUserPresence";
+import type { MSC1767Text } from "$types/matrix/common";
+import { TimezoneEditor } from "./TimezoneEditor";
+import { PronounEditor } from "./PronounEditor";
+import { BioEditor } from "./BioEditor";
+import { NameColorEditor } from "./NameColorEditor";
+import { StatusEditor } from "./StatusEditor";
+import { AnimalCosmetics } from "./AnimalCosmetics";
+import * as prefix from "$unstable/prefixes";
 
 type PronounSet = {
   summary: string;
@@ -65,11 +72,13 @@ function ProfileAvatar({ profile, userId }: Readonly<ProfileProps>) {
   const useAuthentication = useMediaAuthentication();
   const capabilities = useCapabilities();
   const [alertRemove, setAlertRemove] = useState(false);
-  const disableSetAvatar = capabilities['m.set_avatar_url']?.enabled === false;
+  const disableSetAvatar = capabilities["m.set_avatar_url"]?.enabled === false;
 
-  const defaultDisplayName = profile.displayName ?? getMxIdLocalPart(userId) ?? userId;
+  const defaultDisplayName =
+    profile.displayName ?? getMxIdLocalPart(userId) ?? userId;
   const avatarUrl = profile.avatarUrl
-    ? (mxcUrlToHttp(mx, profile.avatarUrl, useAuthentication, 96, 96, 'crop') ?? undefined)
+    ? (mxcUrlToHttp(mx, profile.avatarUrl, useAuthentication, 96, 96, "crop") ??
+      undefined)
     : undefined;
 
   const [imageFile, setImageFile] = useState<File>();
@@ -91,11 +100,11 @@ function ProfileAvatar({ profile, userId }: Readonly<ProfileProps>) {
       mx.setAvatarUrl(mxc);
       handleRemoveUpload();
     },
-    [mx, handleRemoveUpload]
+    [mx, handleRemoveUpload],
   );
 
   const handleRemoveAvatar = () => {
-    mx.setAvatarUrl('');
+    mx.setAvatarUrl("");
     setAlertRemove(false);
   };
 
@@ -108,7 +117,9 @@ function ProfileAvatar({ profile, userId }: Readonly<ProfileProps>) {
           <UserAvatar
             userId={userId}
             src={avatarUrl}
-            renderFallback={() => <Text size="H4">{nameInitials(defaultDisplayName)}</Text>}
+            renderFallback={() => (
+              <Text size="H4">{nameInitials(defaultDisplayName)}</Text>
+            )}
           />
         </Avatar>
       }
@@ -124,7 +135,7 @@ function ProfileAvatar({ profile, userId }: Readonly<ProfileProps>) {
       ) : (
         <Box gap="200">
           <Button
-            onClick={() => pickFile('image/*')}
+            onClick={() => pickFile("image/*")}
             size="300"
             variant="Secondary"
             fill="Soft"
@@ -162,7 +173,7 @@ function ProfileAvatar({ profile, userId }: Readonly<ProfileProps>) {
             >
               <Modal className={ModalWide} variant="Surface" size="500">
                 <ImageEditor
-                  name={imageFile?.name ?? 'Unnamed'}
+                  name={imageFile?.name ?? "Unnamed"}
                   url={imageFileURL}
                   requestClose={handleRemoveUpload}
                 />
@@ -194,13 +205,23 @@ function ProfileAvatar({ profile, userId }: Readonly<ProfileProps>) {
                 <Box grow="Yes">
                   <Text size="H4">Remove Avatar</Text>
                 </Box>
-                <IconButton size="300" onClick={() => setAlertRemove(false)} radii="300">
+                <IconButton
+                  size="300"
+                  onClick={() => setAlertRemove(false)}
+                  radii="300"
+                >
                   {composerIcon(X)}
                 </IconButton>
               </Header>
-              <Box style={{ padding: config.space.S400 }} direction="Column" gap="400">
+              <Box
+                style={{ padding: config.space.S400 }}
+                direction="Column"
+                gap="400"
+              >
                 <Box direction="Column" gap="200">
-                  <Text priority="400">Are you sure you want to remove profile avatar?</Text>
+                  <Text priority="400">
+                    Are you sure you want to remove profile avatar?
+                  </Text>
                 </Box>
                 <Button variant="Critical" onClick={handleRemoveAvatar}>
                   <Text size="B400">Remove</Text>
@@ -214,7 +235,7 @@ function ProfileAvatar({ profile, userId }: Readonly<ProfileProps>) {
   );
 }
 
-function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
+function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, "profile">>) {
   const mx = useMatrixClient();
   const useAuthentication = useMediaAuthentication();
   const [alertRemove, setAlertRemove] = useState(false);
@@ -245,7 +266,7 @@ function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
   const handlePick = useCallback(() => {
     setIsRemoving(false);
     setStagedUrl(undefined);
-    pickFile('image/*');
+    pickFile("image/*");
   }, [pickFile]);
 
   const handleRemoveUpload = useCallback(() => {
@@ -258,10 +279,13 @@ function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
 
       if (imageFileURL) setStagedUrl(imageFileURL);
 
-      mx.setExtendedProfileProperty?.(prefix.MATRIX_UNSTABLE_PROFILE_BANNER_PROPERTY_NAME, mxc);
+      mx.setExtendedProfileProperty?.(
+        prefix.MATRIX_UNSTABLE_PROFILE_BANNER_PROPERTY_NAME,
+        mxc,
+      );
       setImageFile(undefined);
     },
-    [mx, imageFileURL]
+    [mx, imageFileURL],
   );
 
   const handleRemoveBanner = async () => {
@@ -271,35 +295,37 @@ function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
 
     await mx.setExtendedProfileProperty?.(
       prefix.MATRIX_UNSTABLE_PROFILE_BANNER_PROPERTY_NAME,
-      null
+      null,
     );
 
     setAlertRemove(false);
   };
 
-  const previewUrl = isRemoving ? undefined : imageFileURL || stagedUrl || bannerUrl;
+  const previewUrl = isRemoving
+    ? undefined
+    : imageFileURL || stagedUrl || bannerUrl;
 
   return (
     <SettingTile title="Banner" focusId="banner">
       <Box direction="Column" gap="300" grow="Yes">
         <Box
           style={{
-            height: '100px',
-            width: '100%',
+            height: "100px",
+            width: "100%",
             borderRadius: config.radii.R400,
-            overflow: 'hidden',
-            backgroundColor: 'var(--sable-surface-container)',
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            overflow: "hidden",
+            backgroundColor: "var(--sable-surface-container)",
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           {previewUrl ? (
-            <img
+            <MediaImage
               src={previewUrl}
               key={previewUrl}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
               alt="Banner Preview"
             />
           ) : (
@@ -329,7 +355,9 @@ function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
               outlined
               radii="300"
             >
-              <Text size="B300">{bannerUrl ? 'Change Banner' : 'Upload Banner'}</Text>
+              <Text size="B300">
+                {bannerUrl ? "Change Banner" : "Upload Banner"}
+              </Text>
             </Button>
             {bannerUrl && (
               <Button
@@ -368,12 +396,22 @@ function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
                 <Box grow="Yes">
                   <Text size="H4">Remove Banner</Text>
                 </Box>
-                <IconButton size="300" onClick={() => setAlertRemove(false)} radii="300">
+                <IconButton
+                  size="300"
+                  onClick={() => setAlertRemove(false)}
+                  radii="300"
+                >
                   {composerIcon(X)}
                 </IconButton>
               </Header>
-              <Box style={{ padding: config.space.S400 }} direction="Column" gap="400">
-                <Text priority="400">Are you sure you want to remove profile banner?</Text>
+              <Box
+                style={{ padding: config.space.S400 }}
+                direction="Column"
+                gap="400"
+              >
+                <Text priority="400">
+                  Are you sure you want to remove profile banner?
+                </Text>
                 <Button variant="Critical" onClick={handleRemoveBanner}>
                   <Text size="B400">Remove</Text>
                 </Button>
@@ -389,13 +427,15 @@ function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
 function ProfileDisplayName({ profile, userId }: Readonly<ProfileProps>) {
   const mx = useMatrixClient();
   const capabilities = useCapabilities();
-  const disableSetDisplayname = capabilities['m.set_displayname']?.enabled === false;
+  const disableSetDisplayname =
+    capabilities["m.set_displayname"]?.enabled === false;
 
-  const defaultDisplayName = profile.displayName ?? getMxIdLocalPart(userId) ?? userId;
+  const defaultDisplayName =
+    profile.displayName ?? getMxIdLocalPart(userId) ?? userId;
   const [displayName, setDisplayName] = useState(defaultDisplayName);
 
   const [changeState, changeDisplayName] = useAsyncCallback(
-    useCallback((name: string) => mx.setDisplayName(name), [mx])
+    useCallback((name: string) => mx.setDisplayName(name), [mx]),
   );
   const changingDisplayName = changeState.status === AsyncStatus.Loading;
 
@@ -417,7 +457,9 @@ function ProfileDisplayName({ profile, userId }: Readonly<ProfileProps>) {
     if (changingDisplayName) return;
 
     const target = evt.target as HTMLFormElement | undefined;
-    const displayNameInput = target?.displayNameInput as HTMLInputElement | undefined;
+    const displayNameInput = target?.displayNameInput as
+      | HTMLInputElement
+      | undefined;
     const name = displayNameInput?.value;
     if (!name) return;
 
@@ -462,14 +504,16 @@ function ProfileDisplayName({ profile, userId }: Readonly<ProfileProps>) {
           </Box>
           <Button
             size="400"
-            variant={hasChanges ? 'Success' : 'Secondary'}
-            fill={hasChanges ? 'Solid' : 'Soft'}
+            variant={hasChanges ? "Success" : "Secondary"}
+            fill={hasChanges ? "Solid" : "Soft"}
             outlined
             radii="300"
             disabled={!hasChanges || changingDisplayName}
             type="submit"
           >
-            {changingDisplayName && <Spinner variant="Success" fill="Solid" size="300" />}
+            {changingDisplayName && (
+              <Spinner variant="Success" fill="Solid" size="300" />
+            )}
             <Text size="B400">Save</Text>
           </Button>
         </Box>
@@ -484,7 +528,7 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
 
   const pronouns = (profile.pronouns as PronounSet[]) || [];
   const presence = useUserPresence(userId);
-  const currentStatus = presence?.status || '';
+  const currentStatus = presence?.status || "";
 
   // Keys we don't render here nor handle seperately but still need to exclude
   const EXCLUDED_KEYS = new Set([
@@ -495,7 +539,7 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
   // Unknown fields / unimplemented non-matrix-spec fields
   // Only renders them, can't edit or set
   const extendedFields = Object.entries(profile.extended || {}).filter(
-    ([key]) => !EXCLUDED_KEYS.has(key)
+    ([key]) => !EXCLUDED_KEYS.has(key),
   );
 
   const handleSaveField = useCallback(
@@ -507,19 +551,19 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
         return newCache;
       });
     },
-    [mx, userId, setGlobalProfiles]
+    [mx, userId, setGlobalProfiles],
   );
 
   const handleSaveStatus = useCallback(
     async (newStatus: string) => {
-      const currentState = presence?.presence || 'online';
+      const currentState = presence?.presence || "online";
 
       await mx.setPresence({
         presence: currentState,
         status_msg: newStatus,
       });
     },
-    [mx, presence]
+    [mx, presence],
   );
 
   return (
@@ -545,12 +589,15 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
           focusId="name-color"
           current={
             profile.nameColor ||
-            (profile.extended?.[prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_PROPERTY_NAME] as
-              | string
-              | undefined)
+            (profile.extended?.[
+              prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_PROPERTY_NAME
+            ] as string | undefined)
           }
           onSave={(color) =>
-            handleSaveField(prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_PROPERTY_NAME, color)
+            handleSaveField(
+              prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_PROPERTY_NAME,
+              color,
+            )
           }
         />
         <NameColorEditor
@@ -559,12 +606,15 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
           focusId="name-color-dark-theme"
           current={
             profile.nameColorDark ||
-            (profile.extended?.[prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_DARK_PROPERTY_NAME] as
-              | string
-              | undefined)
+            (profile.extended?.[
+              prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_DARK_PROPERTY_NAME
+            ] as string | undefined)
           }
           onSave={(color) =>
-            handleSaveField(prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_DARK_PROPERTY_NAME, color)
+            handleSaveField(
+              prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_DARK_PROPERTY_NAME,
+              color,
+            )
           }
         />
         <NameColorEditor
@@ -573,12 +623,15 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
           focusId="name-color-light-theme"
           current={
             profile.nameColorLight ||
-            (profile.extended?.[prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_LIGHT_PROPERTY_NAME] as
-              | string
-              | undefined)
+            (profile.extended?.[
+              prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_LIGHT_PROPERTY_NAME
+            ] as string | undefined)
           }
           onSave={(color) =>
-            handleSaveField(prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_LIGHT_PROPERTY_NAME, color)
+            handleSaveField(
+              prefix.MATRIX_SABLE_UNSTABLE_NAME_COLOR_LIGHT_PROPERTY_NAME,
+              color,
+            )
           }
         />
       </SequenceCard>
@@ -591,7 +644,12 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
         <PronounEditor
           title="Pronouns"
           current={pronouns}
-          onSave={(p) => handleSaveField(prefix.MATRIX_UNSTABLE_PROFILE_PRONOUNS_PROPERTY_NAME, p)}
+          onSave={(p) =>
+            handleSaveField(
+              prefix.MATRIX_UNSTABLE_PROFILE_PRONOUNS_PROPERTY_NAME,
+              p,
+            )
+          }
         />
       </SequenceCard>
       <SequenceCard
@@ -603,8 +661,14 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
         <TimezoneEditor
           current={profile.timezone}
           onSave={(tz) => {
-            handleSaveField(prefix.MATRIX_UNSTABLE_PROFILE_TIMEZONE_PROPERTY_NAME, tz);
-            handleSaveField(prefix.MATRIX_STABLE_PROFILE_TIMEZONE_PROPERTY_NAME, tz);
+            handleSaveField(
+              prefix.MATRIX_UNSTABLE_PROFILE_TIMEZONE_PROPERTY_NAME,
+              tz,
+            );
+            handleSaveField(
+              prefix.MATRIX_STABLE_PROFILE_TIMEZONE_PROPERTY_NAME,
+              tz,
+            );
           }}
         />
       </SequenceCard>
@@ -617,39 +681,51 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
         <BioEditor
           value={
             (
-              profile.extended?.[prefix.MATRIX_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME] as
-                | MSC4440Bio
-                | undefined
-            )?.['m.text']?.[0]?.body ||
-            (profile.extended?.[prefix.MATRIX_SABLE_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME] as
-              | string
-              | undefined) ||
-            (profile.extended?.[prefix.MATRIX_COMMET_UNSTABLE_PROFILE_BIO_PROPERTY_NAME] as
-              | string
-              | undefined) ||
+              profile.extended?.[
+                prefix.MATRIX_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME
+              ] as MSC4440Bio | undefined
+            )?.["m.text"]?.[0]?.body ||
+            (profile.extended?.[
+              prefix.MATRIX_SABLE_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME
+            ] as string | undefined) ||
+            (profile.extended?.[
+              prefix.MATRIX_COMMET_UNSTABLE_PROFILE_BIO_PROPERTY_NAME
+            ] as string | undefined) ||
             profile.bio
           }
           onSave={(htmlBio, plainTextBio) => {
-            handleSaveField(prefix.MATRIX_SABLE_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME, htmlBio);
+            handleSaveField(
+              prefix.MATRIX_SABLE_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME,
+              htmlBio,
+            );
 
             // MSC4440
-            handleSaveField(prefix.MATRIX_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME, {
-              'm.text': [
-                {
-                  body: htmlBio,
-                  mimetype: 'text/html',
-                } satisfies MSC1767Text,
-                {
-                  body: plainTextBio,
-                } satisfies MSC1767Text,
-              ],
-            } satisfies MSC4440Bio);
+            handleSaveField(
+              prefix.MATRIX_UNSTABLE_PROFILE_BIOGRAPHY_PROPERTY_NAME,
+              {
+                "m.text": [
+                  {
+                    body: htmlBio,
+                    mimetype: "text/html",
+                  } satisfies MSC1767Text,
+                  {
+                    body: plainTextBio,
+                  } satisfies MSC1767Text,
+                ],
+              } satisfies MSC4440Bio,
+            );
 
-            const cleanedHtml = htmlBio.replaceAll('<br/></blockquote>', '</blockquote>');
-            handleSaveField(prefix.MATRIX_COMMET_UNSTABLE_PROFILE_BIO_PROPERTY_NAME, {
-              format: 'org.matrix.custom.html',
-              formatted_body: cleanedHtml,
-            });
+            const cleanedHtml = htmlBio.replaceAll(
+              "<br/></blockquote>",
+              "</blockquote>",
+            );
+            handleSaveField(
+              prefix.MATRIX_COMMET_UNSTABLE_PROFILE_BIO_PROPERTY_NAME,
+              {
+                format: "org.matrix.custom.html",
+                formatted_body: cleanedHtml,
+              },
+            );
           }}
         />
       </SequenceCard>
@@ -665,27 +741,42 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
           focusId="user-hero-color"
           current={profile?.heroColorScheme?.color}
           onSave={(color) =>
-            handleSaveField(prefix.MATRIX_COMMET_UNSTABLE_PROFILE_COLOR_SCHEME_PROPERTY_NAME, {
-              color,
-              brightness: color ? profile?.heroColorScheme?.brightness : null,
-            })
+            handleSaveField(
+              prefix.MATRIX_COMMET_UNSTABLE_PROFILE_COLOR_SCHEME_PROPERTY_NAME,
+              {
+                color,
+                brightness: color ? profile?.heroColorScheme?.brightness : null,
+              },
+            )
           }
         />
         <IconButton
-          variant={profile?.heroColorScheme?.brightness === 'dark' ? 'Primary' : 'Warning'}
+          variant={
+            profile?.heroColorScheme?.brightness === "dark"
+              ? "Primary"
+              : "Warning"
+          }
           onClick={() =>
-            handleSaveField(prefix.MATRIX_COMMET_UNSTABLE_PROFILE_COLOR_SCHEME_PROPERTY_NAME, {
-              color: profile?.heroColorScheme?.color,
-              brightness: profile?.heroColorScheme?.brightness === 'dark' ? 'light' : 'dark',
-            })
+            handleSaveField(
+              prefix.MATRIX_COMMET_UNSTABLE_PROFILE_COLOR_SCHEME_PROPERTY_NAME,
+              {
+                color: profile?.heroColorScheme?.color,
+                brightness:
+                  profile?.heroColorScheme?.brightness === "dark"
+                    ? "light"
+                    : "dark",
+              },
+            )
           }
         >
           <Box gap="200" direction="Row">
             <Text truncate>
-              {profile?.heroColorScheme?.brightness === 'dark' ? 'Dark Mode' : 'Light Mode'}
+              {profile?.heroColorScheme?.brightness === "dark"
+                ? "Dark Mode"
+                : "Light Mode"}
             </Text>
-            {profile?.heroColorScheme?.brightness === 'dark'
-              ? menuIcon(Star, { weight: 'fill' })
+            {profile?.heroColorScheme?.brightness === "dark"
+              ? menuIcon(Star, { weight: "fill" })
               : menuIcon(Sun)}
           </Box>
         </IconButton>
@@ -694,18 +785,18 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
       {extendedFields.length > 0 &&
         extendedFields.map(([key, value]) => {
           if (
-            typeof value !== 'string' &&
-            typeof value !== 'number' &&
-            typeof value !== 'boolean'
+            typeof value !== "string" &&
+            typeof value !== "number" &&
+            typeof value !== "boolean"
           ) {
             return null;
           }
 
           const strVal = String(value);
           if (
-            (typeof value !== 'string' &&
-              typeof value !== 'number' &&
-              typeof value !== 'boolean') ||
+            (typeof value !== "string" &&
+              typeof value !== "number" &&
+              typeof value !== "boolean") ||
             strVal.length > 256
           ) {
             return null;
@@ -723,7 +814,7 @@ function ProfileExtended({ profile, userId }: Readonly<ProfileProps>) {
                 key={key}
                 focusId={`profile-field-${toSettingsFocusIdPart(key)}`}
                 showSettingLinkAction={false}
-                title={key.split('.').pop() || key}
+                title={key.split(".").pop() || key}
                 description={key}
                 after={
                   <Text size="T300" truncate>

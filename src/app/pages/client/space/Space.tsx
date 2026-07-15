@@ -1,7 +1,14 @@
-import type { MouseEventHandler, ReactElement } from 'react';
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import type { RectCords } from 'folds';
+import type { MouseEventHandler, ReactElement } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import type { RectCords } from "folds";
 import {
   Avatar,
   Box,
@@ -20,36 +27,63 @@ import {
   color,
   config,
   toRem,
-} from 'folds';
-import type { VirtualItem } from '@tanstack/react-virtual';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import FocusTrap from 'focus-trap-react';
-import { useNavigate } from 'react-router-dom';
-import type { MatrixClient, Room, RoomJoinRulesEventContent } from '$types/matrix-sdk';
-import { JoinRule, EventType, KnownMembership } from '$types/matrix-sdk';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import { mDirectAtom } from '$state/mDirectList';
-import { NavCategory, NavCategoryHeader, NavItem, NavItemContent, NavLink } from '$components/nav';
-import { getSpaceLobbyPath, getSpaceRoomPath, getSpaceSearchPath } from '$pages/pathUtils';
-import { getCanonicalAliasOrRoomId, isRoomAlias, mxcUrlToHttp } from '$utils/matrix';
-import { useSelectedRoom } from '$hooks/router/useSelectedRoom';
-import { useSpaceLobbySelected, useSpaceSearchSelected } from '$hooks/router/useSelectedSpace';
-import { useSpace } from '$hooks/useSpace';
-import { VirtualTile } from '$components/virtualizer';
-import { spaceRoomsAtom } from '$state/spaceRooms';
-import { RoomNavCategoryButton, RoomNavItem } from '$features/room-nav';
-import { SpaceNavItem } from '$features/space-nav';
-import { makeNavCategoryId, getNavCategoryIdParts } from '$state/closedNavCategories';
-import { roomToUnreadAtom } from '$state/room/roomToUnread';
-import { useCategoryHandler } from '$hooks/useCategoryHandler';
-import { useNavToActivePathMapper } from '$hooks/useNavToActivePathMapper';
-import { useRoomName } from '$hooks/useRoomMeta';
-import type { HierarchyItem } from '$hooks/useSpaceHierarchy';
-import { useSpaceJoinedHierarchy } from '$hooks/useSpaceHierarchy';
-import { allRoomsAtom } from '$state/room-list/roomList';
-import { PageNav, PageNavContent, PageNavHeader } from '$components/page';
-import { usePowerLevels } from '$hooks/usePowerLevels';
-import { useRecursiveChildScopeFactory, useSpaceChildren } from '$state/hooks/roomList';
+} from "folds";
+import type { VirtualItem } from "@tanstack/react-virtual";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import FocusTrap from "focus-trap-react";
+import { useNavigate } from "react-router-dom";
+import type {
+  MatrixClient,
+  Room,
+  RoomJoinRulesEventContent,
+} from "$types/matrix-sdk";
+import { JoinRule, EventType, KnownMembership } from "$types/matrix-sdk";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import { mDirectAtom } from "$state/mDirectList";
+import {
+  NavCategory,
+  NavCategoryHeader,
+  NavItem,
+  NavItemContent,
+  NavLink,
+} from "$components/nav";
+import {
+  getSpaceLobbyPath,
+  getSpaceRoomPath,
+  getSpaceSearchPath,
+} from "$pages/pathUtils";
+import {
+  getCanonicalAliasOrRoomId,
+  isRoomAlias,
+  mxcUrlToHttp,
+} from "$utils/matrix";
+import { useSelectedRoom } from "$hooks/router/useSelectedRoom";
+import {
+  useSpaceLobbySelected,
+  useSpaceSearchSelected,
+} from "$hooks/router/useSelectedSpace";
+import { useSpace } from "$hooks/useSpace";
+import { VirtualTile } from "$components/virtualizer";
+import { spaceRoomsAtom } from "$state/spaceRooms";
+import { RoomNavCategoryButton, RoomNavItem } from "$features/room-nav";
+import { SpaceNavItem } from "$features/space-nav";
+import {
+  makeNavCategoryId,
+  getNavCategoryIdParts,
+} from "$state/closedNavCategories";
+import { roomToUnreadAtom } from "$state/room/roomToUnread";
+import { useCategoryHandler } from "$hooks/useCategoryHandler";
+import { useNavToActivePathMapper } from "$hooks/useNavToActivePathMapper";
+import { useRoomName } from "$hooks/useRoomMeta";
+import type { HierarchyItem } from "$hooks/useSpaceHierarchy";
+import { useSpaceJoinedHierarchy } from "$hooks/useSpaceHierarchy";
+import { allRoomsAtom } from "$state/room-list/roomList";
+import { PageNav, PageNavContent, PageNavHeader } from "$components/page";
+import { usePowerLevels } from "$hooks/usePowerLevels";
+import {
+  useRecursiveChildScopeFactory,
+  useSpaceChildren,
+} from "$state/hooks/roomList";
 import {
   Checks,
   chipIcon,
@@ -64,201 +98,238 @@ import {
   SignOut,
   Terminal,
   UserPlus,
-} from '$components/icons/phosphor';
-import { roomToParentsAtom } from '$state/room/roomToParents';
-import { roomToChildrenAtom } from '$state/room/roomToChildren';
-import { markAsRead } from '$utils/notifications';
-import { useRoomsUnread } from '$state/hooks/unread';
-import { UseStateProvider } from '$components/UseStateProvider';
-import { LeaveSpacePrompt } from '$components/leave-space-prompt';
-import { copyToClipboard } from '$utils/dom';
-import { useClosedNavCategoriesAtom } from '$state/hooks/closedNavCategories';
-import { useStateEvent } from '$hooks/useStateEvent';
+} from "$components/icons/phosphor";
+import { roomToParentsAtom } from "$state/room/roomToParents";
+import { roomToChildrenAtom } from "$state/room/roomToChildren";
+import { markAsRead } from "$utils/notifications";
+import { useRoomsUnread } from "$state/hooks/unread";
+import { UseStateProvider } from "$components/UseStateProvider";
+import { LeaveSpacePrompt } from "$components/leave-space-prompt";
+import { copyToClipboard } from "$utils/dom";
+import { useClosedNavCategoriesAtom } from "$state/hooks/closedNavCategories";
+import { useStateEvent } from "$hooks/useStateEvent";
 
-import { stopPropagation } from '$utils/keyboard';
-import { getMatrixToRoom } from '$plugins/matrix-to';
-import { getViaServers } from '$plugins/via-servers';
-import { useSetting } from '$state/hooks/settings';
-import { settingsAtom, ShowRoomIcon } from '$state/settings';
+import { stopPropagation } from "$utils/keyboard";
+import { getMatrixToRoom } from "$plugins/matrix-to";
+import { getViaServers } from "$plugins/via-servers";
+import { useSetting } from "$state/hooks/settings";
+import { settingsAtom, ShowRoomIcon } from "$state/settings";
 import {
   getRoomNotificationMode,
   useRoomsNotificationPreferencesContext,
-} from '$hooks/useRoomsNotificationPreferences';
-import { useOpenSpaceSettings } from '$state/hooks/spaceSettings';
-import { useRoomNavigate } from '$hooks/useRoomNavigate';
-import { useRoomCreators } from '$hooks/useRoomCreators';
-import { useRoomPermissions } from '$hooks/useRoomPermissions';
-import { ContainerColor } from '$styles/ContainerColor.css';
-import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
-import { BreakWord } from '$styles/Text.css';
-import { InviteUserPrompt } from '$components/invite-user-prompt';
-import { mobileOrTablet } from '$utils/user-agent';
-import { lastVisitedRoomIdAtom } from '$state/room/lastRoom';
-import { SwipeableOverlayWrapper } from '$components/SwipeableOverlayWrapper';
-import { useCallEmbed } from '$hooks/useCallEmbed';
-import { createDebugLogger } from '$utils/debugLogger';
-import { SidebarResizer } from '$pages/client/sidebar/SidebarResizer';
-import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';
-import { RoomAvatar } from '$components/room-avatar';
-import { getRoomAvatarUrl } from '$utils/room';
-import { nameInitials } from '$utils/common';
-import { useMediaAuthentication } from '$hooks/useMediaAuthentication';
-import { CustomStateEvent } from '$types/matrix/room';
-import type { RoomBannerContent } from '$types/matrix-sdk-events';
-import { ModalWide } from '$styles/Modal.css';
-import { ImageViewer } from '$components/image-viewer';
-import * as css from './styles.css';
-import { isResizingSidebarAtom } from '$state/isResizingSidebar';
-import { UserQuickTools } from '../sidebar/UserQuickTools';
+} from "$hooks/useRoomsNotificationPreferences";
+import { useOpenSpaceSettings } from "$state/hooks/spaceSettings";
+import { useRoomNavigate } from "$hooks/useRoomNavigate";
+import { useRoomCreators } from "$hooks/useRoomCreators";
+import { useRoomPermissions } from "$hooks/useRoomPermissions";
+import { ContainerColor } from "$styles/ContainerColor.css";
+import { AsyncStatus, useAsyncCallback } from "$hooks/useAsyncCallback";
+import { BreakWord } from "$styles/Text.css";
+import { InviteUserPrompt } from "$components/invite-user-prompt";
+import { mobileOrTablet } from "$utils/user-agent";
+import { lastVisitedRoomIdAtom } from "$state/room/lastRoom";
+import { SwipeableOverlayWrapper } from "$components/SwipeableOverlayWrapper";
+import { useCallEmbed } from "$hooks/useCallEmbed";
+import { createDebugLogger } from "$utils/debugLogger";
+import { SidebarResizer } from "$pages/client/sidebar/SidebarResizer";
+import { ScreenSize, useScreenSizeContext } from "$hooks/useScreenSize";
+import { RoomAvatar } from "$components/room-avatar";
+import { getRoomAvatarUrl } from "$utils/room";
+import { nameInitials } from "$utils/common";
+import { useMediaAuthentication } from "$hooks/useMediaAuthentication";
+import { CustomStateEvent } from "$types/matrix/room";
+import type { RoomBannerContent } from "$types/matrix-sdk-events";
+import { ModalWide } from "$styles/Modal.css";
+import { ImageViewer } from "$components/image-viewer";
+import * as css from "./styles.css";
+import { isResizingSidebarAtom } from "$state/isResizingSidebar";
+import { UserQuickTools } from "../sidebar/UserQuickTools";
 
-const debugLog = createDebugLogger('Space');
+const debugLog = createDebugLogger("Space");
 
 type SpaceMenuProps = {
   room: Room;
   requestClose: () => void;
 };
 
-const SpaceMenu = forwardRef<HTMLDivElement, SpaceMenuProps>(({ room, requestClose }, ref) => {
-  const mx = useMatrixClient();
-  const [hideReads] = useSetting(settingsAtom, 'hideReads');
-  const [developerTools] = useSetting(settingsAtom, 'developerTools');
-  const roomToParents = useAtomValue(roomToParentsAtom);
-  const powerLevels = usePowerLevels(room);
-  const creators = useRoomCreators(room);
+const SpaceMenu = forwardRef<HTMLDivElement, SpaceMenuProps>(
+  ({ room, requestClose }, ref) => {
+    const mx = useMatrixClient();
+    const [hideReads] = useSetting(settingsAtom, "hideReads");
+    const [developerTools] = useSetting(settingsAtom, "developerTools");
+    const roomToParents = useAtomValue(roomToParentsAtom);
+    const powerLevels = usePowerLevels(room);
+    const creators = useRoomCreators(room);
 
-  const permissions = useRoomPermissions(creators, powerLevels);
-  const canInvite = permissions.action('invite', mx.getSafeUserId());
-  const openSpaceSettings = useOpenSpaceSettings();
-  const { navigateRoom } = useRoomNavigate();
+    const permissions = useRoomPermissions(creators, powerLevels);
+    const canInvite = permissions.action("invite", mx.getSafeUserId());
+    const openSpaceSettings = useOpenSpaceSettings();
+    const { navigateRoom } = useRoomNavigate();
 
-  const [invitePrompt, setInvitePrompt] = useState(false);
+    const [invitePrompt, setInvitePrompt] = useState(false);
 
-  const allChild = useSpaceChildren(
-    allRoomsAtom,
-    room.roomId,
-    useRecursiveChildScopeFactory(mx, roomToParents)
-  );
-  const unread = useRoomsUnread(allChild, roomToUnreadAtom);
+    const allChild = useSpaceChildren(
+      allRoomsAtom,
+      room.roomId,
+      useRecursiveChildScopeFactory(mx, roomToParents),
+    );
+    const unread = useRoomsUnread(allChild, roomToUnreadAtom);
 
-  const handleMarkAsRead = () => {
-    allChild.forEach((childRoomId) => markAsRead(mx, childRoomId, hideReads));
-    requestClose();
-  };
+    const handleMarkAsRead = () => {
+      allChild.forEach((childRoomId) => markAsRead(mx, childRoomId, hideReads));
+      requestClose();
+    };
 
-  const handleCopyLink = () => {
-    const roomIdOrAlias = getCanonicalAliasOrRoomId(mx, room.roomId);
-    const viaServers = isRoomAlias(roomIdOrAlias) ? undefined : getViaServers(room);
-    copyToClipboard(getMatrixToRoom(roomIdOrAlias, viaServers));
-    requestClose();
-  };
+    const handleCopyLink = () => {
+      const roomIdOrAlias = getCanonicalAliasOrRoomId(mx, room.roomId);
+      const viaServers = isRoomAlias(roomIdOrAlias)
+        ? undefined
+        : getViaServers(room);
+      copyToClipboard(getMatrixToRoom(roomIdOrAlias, viaServers));
+      requestClose();
+    };
 
-  const handleInvite = () => {
-    setInvitePrompt(true);
-  };
+    const handleInvite = () => {
+      setInvitePrompt(true);
+    };
 
-  const handleRoomSettings = () => {
-    openSpaceSettings(room.roomId);
-    requestClose();
-  };
+    const handleRoomSettings = () => {
+      openSpaceSettings(room.roomId);
+      requestClose();
+    };
 
-  const handleOpenTimeline = () => {
-    debugLog.info('ui', 'Space timeline opened', { roomId: room.roomId });
-    navigateRoom(room.roomId);
-    requestClose();
-  };
+    const handleOpenTimeline = () => {
+      debugLog.info("ui", "Space timeline opened", { roomId: room.roomId });
+      navigateRoom(room.roomId);
+      requestClose();
+    };
 
-  return (
-    <Menu ref={ref} style={{ maxWidth: toRem(160), width: '100vw' }}>
-      <Box direction="Column" gap="100" style={{ padding: config.space.S100 }}>
-        {invitePrompt && room && (
-          <InviteUserPrompt
-            room={room}
-            requestClose={() => {
-              setInvitePrompt(false);
-              requestClose();
-            }}
-          />
-        )}
-        <MenuItem
-          onClick={handleMarkAsRead}
-          size="300"
-          after={menuIcon(Checks)}
-          radii="300"
-          disabled={!unread}
+    return (
+      <Menu ref={ref} style={{ maxWidth: toRem(160), width: "100vw" }}>
+        <Box
+          direction="Column"
+          gap="100"
+          style={{ padding: config.space.S100 }}
         >
-          <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
-            Mark as Read
-          </Text>
-        </MenuItem>
-      </Box>
-      <Line variant="Surface" size="300" />
-      <Box direction="Column" gap="100" style={{ padding: config.space.S100 }}>
-        <MenuItem
-          onClick={handleInvite}
-          variant="Primary"
-          fill="None"
-          size="300"
-          after={menuIcon(UserPlus)}
-          radii="300"
-          aria-pressed={invitePrompt}
-          disabled={!canInvite}
-        >
-          <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
-            Invite
-          </Text>
-        </MenuItem>
-        <MenuItem onClick={handleCopyLink} size="300" after={menuIcon(Link)} radii="300">
-          <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
-            Copy Link
-          </Text>
-        </MenuItem>
-        <MenuItem onClick={handleRoomSettings} size="300" after={menuIcon(GearSix)} radii="300">
-          <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
-            Space Settings
-          </Text>
-        </MenuItem>
-        {developerTools && (
-          <MenuItem onClick={handleOpenTimeline} size="300" after={menuIcon(Terminal)} radii="300">
+          {invitePrompt && room && (
+            <InviteUserPrompt
+              room={room}
+              requestClose={() => {
+                setInvitePrompt(false);
+                requestClose();
+              }}
+            />
+          )}
+          <MenuItem
+            onClick={handleMarkAsRead}
+            size="300"
+            after={menuIcon(Checks)}
+            radii="300"
+            disabled={!unread}
+          >
             <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
-              Event Timeline
+              Mark as Read
             </Text>
           </MenuItem>
-        )}
-      </Box>
-      <Line variant="Surface" size="300" />
-      <Box direction="Column" gap="100" style={{ padding: config.space.S100 }}>
-        <UseStateProvider initial={false}>
-          {(promptLeave, setPromptLeave) => (
-            <>
-              <MenuItem
-                onClick={() => setPromptLeave(true)}
-                variant="Critical"
-                fill="None"
-                size="300"
-                after={menuIcon(SignOut)}
-                radii="300"
-                aria-pressed={promptLeave}
-              >
-                <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
-                  Leave Space
-                </Text>
-              </MenuItem>
-              {promptLeave && (
-                <LeaveSpacePrompt
-                  roomId={room.roomId}
-                  onDone={requestClose}
-                  onCancel={() => setPromptLeave(false)}
-                />
-              )}
-            </>
+        </Box>
+        <Line variant="Surface" size="300" />
+        <Box
+          direction="Column"
+          gap="100"
+          style={{ padding: config.space.S100 }}
+        >
+          <MenuItem
+            onClick={handleInvite}
+            variant="Primary"
+            fill="None"
+            size="300"
+            after={menuIcon(UserPlus)}
+            radii="300"
+            aria-pressed={invitePrompt}
+            disabled={!canInvite}
+          >
+            <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
+              Invite
+            </Text>
+          </MenuItem>
+          <MenuItem
+            onClick={handleCopyLink}
+            size="300"
+            after={menuIcon(Link)}
+            radii="300"
+          >
+            <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
+              Copy Link
+            </Text>
+          </MenuItem>
+          <MenuItem
+            onClick={handleRoomSettings}
+            size="300"
+            after={menuIcon(GearSix)}
+            radii="300"
+          >
+            <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
+              Space Settings
+            </Text>
+          </MenuItem>
+          {developerTools && (
+            <MenuItem
+              onClick={handleOpenTimeline}
+              size="300"
+              after={menuIcon(Terminal)}
+              radii="300"
+            >
+              <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
+                Event Timeline
+              </Text>
+            </MenuItem>
           )}
-        </UseStateProvider>
-      </Box>
-    </Menu>
-  );
-});
+        </Box>
+        <Line variant="Surface" size="300" />
+        <Box
+          direction="Column"
+          gap="100"
+          style={{ padding: config.space.S100 }}
+        >
+          <UseStateProvider initial={false}>
+            {(promptLeave, setPromptLeave) => (
+              <>
+                <MenuItem
+                  onClick={() => setPromptLeave(true)}
+                  variant="Critical"
+                  fill="None"
+                  size="300"
+                  after={menuIcon(SignOut)}
+                  radii="300"
+                  aria-pressed={promptLeave}
+                >
+                  <Text style={{ flexGrow: 1 }} as="span" size="T300" truncate>
+                    Leave Space
+                  </Text>
+                </MenuItem>
+                {promptLeave && (
+                  <LeaveSpacePrompt
+                    roomId={room.roomId}
+                    onDone={requestClose}
+                    onCancel={() => setPromptLeave(false)}
+                  />
+                )}
+              </>
+            )}
+          </UseStateProvider>
+        </Box>
+      </Menu>
+    );
+  },
+);
 
-function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient }) {
+function SpaceHeader({
+  hideText,
+  mx,
+}: {
+  hideText?: boolean;
+  mx: MatrixClient;
+}) {
   const space = useSpace();
   const spaceName = useRoomName(space);
   const [menuAnchor, setMenuAnchor] = useState<RectCords>();
@@ -266,7 +337,7 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
 
   const joinRules = useStateEvent(
     space,
-    EventType.RoomJoinRules
+    EventType.RoomJoinRules,
   )?.getContent<RoomJoinRulesEventContent>();
 
   const handleOpenMenu: MouseEventHandler<HTMLButtonElement> = (evt) => {
@@ -276,8 +347,11 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
       return cords;
     });
   };
-  const [showBanners] = useSetting(settingsAtom, 'showRoomBanners');
-  const [roomBannerHeight, setRoomBannerHeight] = useSetting(settingsAtom, 'roomBannerHeight');
+  const [showBanners] = useSetting(settingsAtom, "showRoomBanners");
+  const [roomBannerHeight, setRoomBannerHeight] = useSetting(
+    settingsAtom,
+    "roomBannerHeight",
+  );
   const [curHeight, setCurHeight] = useState(roomBannerHeight);
   useEffect(() => {
     setCurHeight(roomBannerHeight);
@@ -285,7 +359,7 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
 
   const bannerState = useStateEvent(space, CustomStateEvent.RoomBanner);
   const bannerMXC = bannerState?.getContent<RoomBannerContent>()?.url;
-  const bannerURI = mxcUrlToHttp(mx, bannerMXC ?? '', true);
+  const bannerURI = mxcUrlToHttp(mx, bannerMXC ?? "", true);
   const hasBanner = !!(bannerURI && !hideText && showBanners);
 
   const [bannerViewerOpen, setBannerViewerOpen] = useState(false);
@@ -295,16 +369,22 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
 
   return (
     <>
-      <div className={hasBanner ? css.RoomCoverHeaderContainer : ''}>
+      <div className={hasBanner ? css.RoomCoverHeaderContainer : ""}>
         <div
           className={
-            hasBanner ? css.RoomCoverNavContainer : css.RoomCoverlessNavContainer({ hideText })
+            hasBanner
+              ? css.RoomCoverNavContainer
+              : css.RoomCoverlessNavContainer({ hideText })
           }
         >
           <PageNavHeader outlined={!hasBanner} size="600">
             {hideText ? (
               <Box alignItems="Center" grow="Yes" justifyContent="Center">
-                <Avatar size={hideText ? undefined : '200'} radii="400" onClick={handleOpenMenu}>
+                <Avatar
+                  size={hideText ? undefined : "200"}
+                  radii="400"
+                  onClick={handleOpenMenu}
+                >
                   <RoomAvatar
                     roomId={space.roomId}
                     src={getRoomAvatarUrl(mx, space, 96, useAuthentication)}
@@ -324,7 +404,7 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
                   grow="Yes"
                   alignItems="Center"
                   gap="100"
-                  style={hasBanner ? { color: '#fff' } : {}}
+                  style={hasBanner ? { color: "#fff" } : {}}
                 >
                   <Text size="H4" truncate>
                     {spaceName}
@@ -335,11 +415,15 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
                   <IconButton
                     aria-pressed={!!menuAnchor}
                     variant="Background"
-                    style={hasBanner ? { backgroundColor: 'transparent', color: '#fff' } : {}}
+                    style={
+                      hasBanner
+                        ? { backgroundColor: "transparent", color: "#fff" }
+                        : {}
+                    }
                     onClick={handleOpenMenu}
                   >
                     {composerIcon(DotsThreeOutlineVerticalIcon, {
-                      weight: menuAnchor ? 'fill' : 'regular',
+                      weight: menuAnchor ? "fill" : "regular",
                     })}
                   </IconButton>
                 </Box>
@@ -359,12 +443,17 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
                     returnFocusOnDeactivate: false,
                     onDeactivate: () => setMenuAnchor(undefined),
                     clickOutsideDeactivates: true,
-                    isKeyForward: (evt: KeyboardEvent) => evt.key === 'ArrowDown',
-                    isKeyBackward: (evt: KeyboardEvent) => evt.key === 'ArrowUp',
+                    isKeyForward: (evt: KeyboardEvent) =>
+                      evt.key === "ArrowDown",
+                    isKeyBackward: (evt: KeyboardEvent) =>
+                      evt.key === "ArrowUp",
                     escapeDeactivates: stopPropagation,
                   }}
                 >
-                  <SpaceMenu room={space} requestClose={() => setMenuAnchor(undefined)} />
+                  <SpaceMenu
+                    room={space}
+                    requestClose={() => setMenuAnchor(undefined)}
+                  />
                 </FocusTrap>
               }
             />
@@ -373,7 +462,11 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
       </div>
       {hasBanner && (
         <>
-          <Box shrink="No" className={css.RoomCoverContainer} style={{ height: toRem(curHeight) }}>
+          <Box
+            shrink="No"
+            className={css.RoomCoverContainer}
+            style={{ height: toRem(curHeight) }}
+          >
             <div className={css.RoomCover}>
               <button
                 type="button"
@@ -382,13 +475,18 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
                 aria-label={`View ${spaceName} banner`}
                 onClick={() => setBannerViewerOpen(true)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     setBannerViewerOpen(true);
                   }
                 }}
               >
-                <img className={css.RoomCoverImage} src={bannerURI} alt="" draggable="false" />
+                <MediaImage
+                  className={css.RoomCoverImage}
+                  src={bannerURI}
+                  alt=""
+                  draggable="false"
+                />
               </button>
               <SidebarResizer
                 setCurWidth={setCurHeight}
@@ -435,7 +533,10 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
 }
 
 type SpaceTombstoneProps = { roomId: string; replacementRoomId: string };
-export function SpaceTombstone({ roomId, replacementRoomId }: SpaceTombstoneProps) {
+export function SpaceTombstone({
+  roomId,
+  replacementRoomId,
+}: SpaceTombstoneProps) {
   const mx = useMatrixClient();
   const { navigateSpace } = useRoomNavigate();
 
@@ -446,13 +547,14 @@ export function SpaceTombstone({ roomId, replacementRoomId }: SpaceTombstoneProp
       return mx.joinRoom(replacementRoomId, {
         viaServers: via,
       });
-    }, [mx, roomId, replacementRoomId])
+    }, [mx, roomId, replacementRoomId]),
   );
   const replacementRoom = mx.getRoom(replacementRoomId);
 
   const handleOpen = () => {
     if (replacementRoom) navigateSpace(replacementRoom.roomId);
-    if (joinState.status === AsyncStatus.Success) navigateSpace(joinState.data.roomId);
+    if (joinState.status === AsyncStatus.Success)
+      navigateSpace(joinState.data.roomId);
   };
 
   return (
@@ -462,23 +564,36 @@ export function SpaceTombstone({ roomId, replacementRoomId }: SpaceTombstoneProp
         borderRadius: config.radii.R400,
         borderWidth: config.borderWidth.B300,
       }}
-      className={ContainerColor({ variant: 'Surface' })}
+      className={ContainerColor({ variant: "Surface" })}
       direction="Column"
       gap="300"
     >
       <Box direction="Column" grow="Yes" gap="100">
         <Text size="L400">Space Upgraded</Text>
-        <Text size="T200">This space has been replaced and is no longer active.</Text>
+        <Text size="T200">
+          This space has been replaced and is no longer active.
+        </Text>
         {joinState.status === AsyncStatus.Error && (
-          <Text className={BreakWord} style={{ color: color.Critical.Main }} size="T200">
-            {(joinState.error as Error)?.message ?? 'Failed to join replacement space!'}
+          <Text
+            className={BreakWord}
+            style={{ color: color.Critical.Main }}
+            size="T200"
+          >
+            {(joinState.error as Error)?.message ??
+              "Failed to join replacement space!"}
           </Text>
         )}
       </Box>
       <Box direction="Column" shrink="No">
         {replacementRoom?.getMyMembership() === KnownMembership.Join ||
         joinState.status === AsyncStatus.Success ? (
-          <Button onClick={handleOpen} size="300" variant="Success" fill="Solid" radii="300">
+          <Button
+            onClick={handleOpen}
+            size="300"
+            variant="Success"
+            fill="Solid"
+            radii="300"
+          >
             <Text size="B300">Open New Space</Text>
           </Button>
         ) : (
@@ -525,22 +640,29 @@ export function Space() {
   const notificationPreferences = useRoomsNotificationPreferencesContext();
 
   const setIsResizingSidebar = useSetAtom(isResizingSidebarAtom);
-  const [roomSidebarWidth, setRoomSidebarWidth] = useSetting(settingsAtom, 'roomSidebarWidth');
+  const [roomSidebarWidth, setRoomSidebarWidth] = useSetting(
+    settingsAtom,
+    "roomSidebarWidth",
+  );
   const [curWidth, setCurWidth] = useState(roomSidebarWidth);
   useEffect(() => {
     setCurWidth(roomSidebarWidth);
   }, [roomSidebarWidth]);
 
-  const [showRoomIconGeneral] = useSetting(settingsAtom, 'showRoomIcon');
-  const [showRoomIconArray] = useSetting(settingsAtom, 'perRoomShowRoomIcon');
+  const [showRoomIconGeneral] = useSetting(settingsAtom, "showRoomIcon");
+  const [showRoomIconArray] = useSetting(settingsAtom, "perRoomShowRoomIcon");
   const showRoomIcon =
-    showRoomIconArray.find((item) => item.roomId === space.roomId)?.display ?? showRoomIconGeneral;
+    showRoomIconArray.find((item) => item.roomId === space.roomId)?.display ??
+    showRoomIconGeneral;
   const showIcons = () => {
     if (showRoomIcon === ShowRoomIcon.Always) return true;
     if (showRoomIcon === ShowRoomIcon.Never) return false;
     return curWidth < 144;
   };
-  const [joinCallOnSingleClick] = useSetting(settingsAtom, 'joinCallOnSingleClick');
+  const [joinCallOnSingleClick] = useSetting(
+    settingsAtom,
+    "joinCallOnSingleClick",
+  );
 
   const tombstoneEvent = useStateEvent(space, EventType.RoomTombstone);
   const selectedRoomId = useSelectedRoom();
@@ -548,7 +670,9 @@ export function Space() {
   const searchSelected = useSpaceSearchSelected(spaceIdOrAlias);
   const callEmbed = useCallEmbed();
 
-  const [closedCategories, setClosedCategories] = useAtom(useClosedNavCategoriesAtom());
+  const [closedCategories, setClosedCategories] = useAtom(
+    useClosedNavCategoriesAtom(),
+  );
 
   const getRoom = useCallback(
     (rId: string): Room | undefined => {
@@ -557,7 +681,7 @@ export function Space() {
       }
       return undefined;
     },
-    [mx, allJoinedRooms]
+    [mx, allJoinedRooms],
   );
 
   const closedCategoriesCache = useRef(new Map());
@@ -581,7 +705,7 @@ export function Space() {
       spaceId: string,
       parentId: string,
       previousId?: string,
-      visited: Set<string> = new Set()
+      visited: Set<string> = new Set(),
     ): boolean => {
       // Ignore root space being collapsed if in a subspace,
       // this is due to many spaces dumping all rooms in the top-level space.
@@ -615,13 +739,13 @@ export function Space() {
       // As a subspace can be in multiple spaces,
       // only return true if all parent spaces are closed.
       const allClosed = !Array.from(parentParentIds).some(
-        (id) => !getInClosedCategories(spaceId, id, parentId, visited)
+        (id) => !getInClosedCategories(spaceId, id, parentId, visited),
       );
       visited.delete(categoryId);
       closedCategoriesCache.current.set(categoryId, allClosed);
       return allClosed;
     },
-    [closedCategories, getRoom, roomToParents, spaceRooms]
+    [closedCategories, getRoom, roomToParents, spaceRooms],
   );
 
   /**
@@ -646,9 +770,11 @@ export function Space() {
         return false;
       }
 
-      return Array.from(childIds).some((id) => getContainsShowRoom(id, visited));
+      return Array.from(childIds).some((id) =>
+        getContainsShowRoom(id, visited),
+      );
     },
-    [roomToUnread, selectedRoomId, roomToChildren]
+    [roomToUnread, selectedRoomId, roomToChildren],
   );
 
   /**
@@ -658,7 +784,10 @@ export function Space() {
    * @param roomId - The room ID to start the check from.
    * @returns True if every parent category is collapsed; false otherwise.
    */
-  const getAllAncestorsCollapsed = (spaceId: string, roomId: string): boolean => {
+  const getAllAncestorsCollapsed = (
+    spaceId: string,
+    roomId: string,
+  ): boolean => {
     const categoryId = makeNavCategoryId(spaceId, roomId);
     if (ancestorsCollapsedCache.current.has(categoryId)) {
       return ancestorsCollapsedCache.current.get(categoryId);
@@ -671,7 +800,7 @@ export function Space() {
     }
 
     const allCollapsed = !Array.from(parentIds).some(
-      (id) => !getInClosedCategories(spaceId, id, roomId)
+      (id) => !getInClosedCategories(spaceId, id, roomId),
     );
     ancestorsCollapsedCache.current.set(categoryId, allCollapsed);
     return allCollapsed;
@@ -680,7 +809,10 @@ export function Space() {
   /**
    * Determines the depth limit for the joined space hierarchy and the SpaceNavItems to start appearing
    */
-  const [subspaceHierarchyLimit] = useSetting(settingsAtom, 'subspaceHierarchyLimit');
+  const [subspaceHierarchyLimit] = useSetting(
+    settingsAtom,
+    "subspaceHierarchyLimit",
+  );
   /**
    * Creates an SVG used for connecting spaces to their subrooms.
    * @param virtualizedItems - The virtualized item list that will be used to render elements in the nav
@@ -688,7 +820,7 @@ export function Space() {
    */
   const getConnectorSVG = (
     hierarchy: HierarchyItem[],
-    virtualizedItems: VirtualItem[]
+    virtualizedItems: VirtualItem[],
   ): ReactElement => {
     const DEPTH_START = 2;
     const PADDING_LEFT_DEPTH_OFFSET = 15.75;
@@ -711,7 +843,11 @@ export function Space() {
         return;
       }
       // for nearly root level text/call rooms, we will not be drawing any arcs.
-      if (renderDepth === DEPTH_START - 1 && !room?.isSpaceRoom() && connectorStack.length === 0) {
+      if (
+        renderDepth === DEPTH_START - 1 &&
+        !room?.isSpaceRoom() &&
+        connectorStack.length === 0
+      ) {
         return;
       }
 
@@ -720,20 +856,27 @@ export function Space() {
       if (renderDepth === DEPTH_START) {
         connectorStack = [
           {
-            aX: PADDING_LEFT_DEPTH_OFFSET * DEPTH_START + PADDING_LEFT_DEPTH_OFFSET_START,
+            aX:
+              PADDING_LEFT_DEPTH_OFFSET * DEPTH_START +
+              PADDING_LEFT_DEPTH_OFFSET_START,
             aY: vItem.end,
           },
         ];
         return;
       }
       // adjust the stack to be at the correct depth, which is the "parent" of the current item.
-      while (connectorStack.length + DEPTH_START > renderDepth && connectorStack.length !== 0) {
+      while (
+        connectorStack.length + DEPTH_START > renderDepth &&
+        connectorStack.length !== 0
+      ) {
         connectorStack.pop();
       }
 
       // Fixes crash in case the top level virtual item is unrendered.
       if (connectorStack.length === 0) {
-        connectorStack = [{ aX: Math.round(renderDepth * PADDING_LEFT_DEPTH_OFFSET), aY: 0 }];
+        connectorStack = [
+          { aX: Math.round(renderDepth * PADDING_LEFT_DEPTH_OFFSET), aY: 0 },
+        ];
       }
 
       const lastConnector = connectorStack[connectorStack.length - 1];
@@ -745,7 +888,8 @@ export function Space() {
 
       // bX: point where the vertical connector ends
       const bX = Math.round(
-        (renderDepth - 0.5) * PADDING_LEFT_DEPTH_OFFSET + PADDING_LEFT_DEPTH_OFFSET_START
+        (renderDepth - 0.5) * PADDING_LEFT_DEPTH_OFFSET +
+          PADDING_LEFT_DEPTH_OFFSET_START,
       );
       // bY: center of current item
       const bY = vItem.end - vItem.size / 2;
@@ -763,23 +907,25 @@ export function Space() {
           stroke={color.Surface.ContainerLine}
           strokeWidth="2"
           display="block"
-        />
+        />,
       );
 
       // add this item to the connector stack, in case the next item's depth is higher.
       connectorStack.push({
-        aX: Math.round(renderDepth * PADDING_LEFT_DEPTH_OFFSET) + PADDING_LEFT_DEPTH_OFFSET_START,
+        aX:
+          Math.round(renderDepth * PADDING_LEFT_DEPTH_OFFSET) +
+          PADDING_LEFT_DEPTH_OFFSET_START,
         aY: vItem.end,
       });
     });
     return (
       <svg
         style={{
-          position: 'absolute',
+          position: "absolute",
           inset: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
         }}
       >
         {pathHolder}
@@ -801,9 +947,12 @@ export function Space() {
         }
         const unread = roomToUnread.get(roomId);
         const containsShowRoom = getContainsShowRoom(roomId);
-        const hasUnread = !!unread && (unread.total > 0 || unread.highlight > 0);
+        const hasUnread =
+          !!unread && (unread.total > 0 || unread.highlight > 0);
         const showRoomAnyway =
-          hasUnread || roomId === selectedRoomId || callEmbed?.roomId === roomId;
+          hasUnread ||
+          roomId === selectedRoomId ||
+          callEmbed?.roomId === roomId;
         return containsShowRoom || !showRoomAnyway;
       },
       [
@@ -814,12 +963,12 @@ export function Space() {
         subspaceHierarchyLimit,
         roomToUnread,
         selectedRoomId,
-      ]
+      ],
     ),
     useCallback(
       (sId) => getInClosedCategories(space.roomId, sId),
-      [getInClosedCategories, space.roomId]
-    )
+      [getInClosedCategories, space.roomId],
+    ),
   );
 
   const virtualizer = useVirtualizer({
@@ -831,18 +980,21 @@ export function Space() {
 
   const virtualizedItems = virtualizer.getVirtualItems();
 
-  const handleCategoryClick = useCategoryHandler(setClosedCategories, (categoryId) => {
-    const collapsed = closedCategories.has(categoryId);
-    const [spaceId, roomId] = getNavCategoryIdParts(categoryId);
+  const handleCategoryClick = useCategoryHandler(
+    setClosedCategories,
+    (categoryId) => {
+      const collapsed = closedCategories.has(categoryId);
+      const [spaceId, roomId] = getNavCategoryIdParts(categoryId);
 
-    // Only prevent collapsing if all parents are collapsed
-    const toggleable = !getAllAncestorsCollapsed(spaceId, roomId);
+      // Only prevent collapsing if all parents are collapsed
+      const toggleable = !getAllAncestorsCollapsed(spaceId, roomId);
 
-    if (toggleable) {
-      return collapsed;
-    }
-    return !collapsed;
-  });
+      if (toggleable) {
+        return collapsed;
+      }
+      return !collapsed;
+    },
+  );
 
   const getToLink = (roomId: string) =>
     getSpaceRoomPath(spaceIdOrAlias, getCanonicalAliasOrRoomId(mx, roomId));
@@ -860,14 +1012,14 @@ export function Space() {
   const screenSize = useScreenSizeContext();
   const isMobile = screenSize === ScreenSize.Mobile;
   const hideText = curWidth <= 80 && !isMobile;
-  const [oldSidebar] = useSetting(settingsAtom, 'oldSidebar');
+  const [oldSidebar] = useSetting(settingsAtom, "oldSidebar");
 
   return (
     <Box
       shrink="No"
       style={{
-        position: 'relative',
-        width: isMobile ? '100%' : toRem(curWidth),
+        position: "relative",
+        width: isMobile ? "100%" : toRem(curWidth),
       }}
     >
       <PageNav>
@@ -878,12 +1030,22 @@ export function Space() {
               {tombstoneEvent && (
                 <SpaceTombstone
                   roomId={space.roomId}
-                  replacementRoomId={tombstoneEvent.getContent().replacement_room}
+                  replacementRoomId={
+                    tombstoneEvent.getContent().replacement_room
+                  }
                 />
               )}
               <NavCategory>
-                <NavItem variant="Background" radii="400" aria-selected={lobbySelected}>
-                  <NavLink to={getSpaceLobbyPath(getCanonicalAliasOrRoomId(mx, space.roomId))}>
+                <NavItem
+                  variant="Background"
+                  radii="400"
+                  aria-selected={lobbySelected}
+                >
+                  <NavLink
+                    to={getSpaceLobbyPath(
+                      getCanonicalAliasOrRoomId(mx, space.roomId),
+                    )}
+                  >
                     <NavItemContent>
                       <Box
                         as="span"
@@ -893,11 +1055,17 @@ export function Space() {
                         gap="200"
                       >
                         <Avatar
-                          size={hideText ? undefined : '200'}
+                          size={hideText ? undefined : "200"}
                           radii="400"
-                          style={hideText ? { width: '100%', padding: '0' } : undefined}
+                          style={
+                            hideText
+                              ? { width: "100%", padding: "0" }
+                              : undefined
+                          }
                         >
-                          {menuIcon(Flag, { weight: lobbySelected ? 'fill' : 'regular' })}
+                          {menuIcon(Flag, {
+                            weight: lobbySelected ? "fill" : "regular",
+                          })}
                         </Avatar>
                         {!hideText && (
                           <Box as="span" grow="Yes">
@@ -910,8 +1078,16 @@ export function Space() {
                     </NavItemContent>
                   </NavLink>
                 </NavItem>
-                <NavItem variant="Background" radii="400" aria-selected={searchSelected}>
-                  <NavLink to={getSpaceSearchPath(getCanonicalAliasOrRoomId(mx, space.roomId))}>
+                <NavItem
+                  variant="Background"
+                  radii="400"
+                  aria-selected={searchSelected}
+                >
+                  <NavLink
+                    to={getSpaceSearchPath(
+                      getCanonicalAliasOrRoomId(mx, space.roomId),
+                    )}
+                  >
                     <NavItemContent>
                       <Box
                         as="span"
@@ -921,12 +1097,12 @@ export function Space() {
                         gap="200"
                       >
                         <Avatar
-                          size={hideText ? undefined : '200'}
+                          size={hideText ? undefined : "200"}
                           radii="400"
-                          style={hideText ? { width: '100%' } : undefined}
+                          style={hideText ? { width: "100%" } : undefined}
                         >
                           {menuIcon(MagnifyingGlass, {
-                            weight: searchSelected ? 'fill' : 'regular',
+                            weight: searchSelected ? "fill" : "regular",
                           })}
                         </Avatar>
                         <Box as="span" grow="Yes">
@@ -944,8 +1120,8 @@ export function Space() {
               <NavCategory
                 style={{
                   height: virtualizer.getTotalSize(),
-                  position: 'relative',
-                  overflow: 'visible',
+                  position: "relative",
+                  overflow: "visible",
                 }}
               >
                 {virtualizedItems.map((vItem) => {
@@ -954,7 +1130,9 @@ export function Space() {
                   const { roomId, depth: itemDepth } = hierarchyItem;
                   const depth = itemDepth ?? 0;
                   const room = mx.getRoom(roomId);
-                  const renderDepth = room?.isSpaceRoom() ? depth - 2 : depth - 1;
+                  const renderDepth = room?.isSpaceRoom()
+                    ? depth - 2
+                    : depth - 1;
                   if (!room) return null;
                   if (depth === subspaceHierarchyLimit && room.isSpaceRoom()) {
                     return (
@@ -975,7 +1153,9 @@ export function Space() {
                           <SpaceNavItem
                             room={room}
                             selected={selectedRoomId === roomId}
-                            linkPath={getSpaceLobbyPath(getCanonicalAliasOrRoomId(mx, roomId))}
+                            linkPath={getSpaceLobbyPath(
+                              getCanonicalAliasOrRoomId(mx, roomId),
+                            )}
                             hideText={hideText}
                           />
                         </div>
@@ -988,7 +1168,10 @@ export function Space() {
 
                   if (room.isSpaceRoom()) {
                     const categoryId = makeNavCategoryId(space.roomId, roomId);
-                    const closedViaCategory = getInClosedCategories(space.roomId, roomId);
+                    const closedViaCategory = getInClosedCategories(
+                      space.roomId,
+                      roomId,
+                    );
 
                     return (
                       <VirtualTile
@@ -996,14 +1179,28 @@ export function Space() {
                         key={vItem.index}
                         ref={virtualizer.measureElement}
                       >
-                        <div style={hideText ? { paddingTop: '0' } : { paddingTop, paddingLeft }}>
-                          <NavCategoryHeader style={hideText ? { justifyContent: 'Center' } : {}}>
+                        <div
+                          style={
+                            hideText
+                              ? { paddingTop: "0" }
+                              : { paddingTop, paddingLeft }
+                          }
+                        >
+                          <NavCategoryHeader
+                            style={hideText ? { justifyContent: "Center" } : {}}
+                          >
                             <RoomNavCategoryButton
                               data-category-id={categoryId}
                               onClick={handleCategoryClick}
-                              closed={closedCategories.has(categoryId) || closedViaCategory}
+                              closed={
+                                closedCategories.has(categoryId) ||
+                                closedViaCategory
+                              }
                             >
-                              {!hideText && (roomId === space.roomId ? 'Rooms' : room?.name)}
+                              {!hideText &&
+                                (roomId === space.roomId
+                                  ? "Rooms"
+                                  : room?.name)}
                             </RoomNavCategoryButton>
                           </NavCategoryHeader>
                         </div>
@@ -1021,11 +1218,11 @@ export function Space() {
                         style={
                           hideText
                             ? {
-                                padding: '0',
-                                width: '100%',
+                                padding: "0",
+                                width: "100%",
                                 aspectRatio: 1,
-                                display: 'flex',
-                                flexDirection: 'column',
+                                display: "flex",
+                                flexDirection: "column",
                               }
                             : { paddingLeft }
                         }
@@ -1039,7 +1236,7 @@ export function Space() {
                           hideText={hideText}
                           notificationMode={getRoomNotificationMode(
                             notificationPreferences,
-                            room.roomId
+                            room.roomId,
                           )}
                           joinCallOnSingleClick={joinCallOnSingleClick}
                           isStrict={showRoomIcon === ShowRoomIcon.Strict}
@@ -1067,7 +1264,9 @@ export function Space() {
           setAnnouncement={setIsResizingSidebar}
         />
       )}
-      {!oldSidebar && !isMobile && <UserQuickTools width={curWidth + 66} compact={false} />}
+      {!oldSidebar && !isMobile && (
+        <UserQuickTools width={curWidth + 66} compact={false} />
+      )}
     </Box>
   );
 }

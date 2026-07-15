@@ -1,16 +1,22 @@
-import { Text } from 'folds';
-import type { RenderElementProps, RenderLeafProps } from 'slate-react';
-import { useFocused, useSelected, useSlate } from 'slate-react';
-import { useAtomValue } from 'jotai';
+import { Text } from "folds";
+import type { RenderElementProps, RenderLeafProps } from "slate-react";
+import { useFocused, useSelected, useSlate } from "slate-react";
+import { useAtomValue } from "jotai";
 
-import * as css from '$styles/CustomHtml.css';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import { mxcUrlToHttp } from '$utils/matrix';
-import { useMediaAuthentication } from '$hooks/useMediaAuthentication';
-import { nicknamesAtom } from '$state/nicknames';
-import { BlockType } from './types';
-import { formatMentionElementDisplayName, getBeginCommand } from './utils';
-import type { CommandElement, EmoticonElement, LinkElement, MentionElement } from './slate';
+import * as css from "$styles/CustomHtml.css";
+import { Image as MediaImage } from "$components/media";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import { mxcUrlToHttp } from "$utils/matrix";
+import { useMediaAuthentication } from "$hooks/useMediaAuthentication";
+import { nicknamesAtom } from "$state/nicknames";
+import { BlockType } from "./types";
+import { formatMentionElementDisplayName, getBeginCommand } from "./utils";
+import type {
+  CommandElement,
+  EmoticonElement,
+  LinkElement,
+  MentionElement,
+} from "./slate";
 
 // Put this at the start and end of an inline component to work around this Chromium bug:
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
@@ -32,7 +38,9 @@ function RenderMentionElement({
   const nicknames = useAtomValue(nicknamesAtom);
 
   const nickname = nicknames[element.id];
-  const displayName = nickname ? `@${nickname}` : formatMentionElementDisplayName(element);
+  const displayName = nickname
+    ? `@${nickname}`
+    : formatMentionElementDisplayName(element);
 
   return (
     <span
@@ -90,10 +98,12 @@ function RenderEmoticonElement({
         })}
         contentEditable={false}
       >
-        {element.key.startsWith('mxc://') ? (
-          <img
+        {element.key.startsWith("mxc://") ? (
+          <MediaImage
             className={css.EmoticonImg}
-            src={mxcUrlToHttp(mx, element.key, useAuthentication) ?? element.key}
+            src={
+              mxcUrlToHttp(mx, element.key, useAuthentication) ?? element.key
+            }
             alt={element.shortcode}
           />
         ) : (
@@ -118,14 +128,18 @@ function RenderLinkElement({
   );
 }
 
-export function RenderElement({ attributes, element, children }: RenderElementProps) {
+export function RenderElement({
+  attributes,
+  element,
+  children,
+}: RenderElementProps) {
   switch (element.type) {
     case BlockType.Paragraph:
       return (
         <Text
           {...attributes}
           className={css.Paragraph}
-          style={{ fontSize: '1rem', lineHeight: 'inherit' }}
+          style={{ fontSize: "1rem", lineHeight: "inherit" }}
         >
           {children}
         </Text>
@@ -159,7 +173,7 @@ export function RenderElement({ attributes, element, children }: RenderElementPr
         <Text
           className={css.Paragraph}
           {...attributes}
-          style={{ fontSize: '1rem', lineHeight: 'inherit' }}
+          style={{ fontSize: "1rem", lineHeight: "inherit" }}
         >
           {children}
         </Text>

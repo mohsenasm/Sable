@@ -1,18 +1,19 @@
-import type { FormEventHandler, ReactNode } from 'react';
-import { useMemo, useState } from 'react';
-import { Badge, Box, Button, Chip, Input, Text } from 'folds';
-import { sizedIcon, Trash } from '$components/icons/phosphor';
-import { mxcUrlToHttp } from '$utils/matrix';
-import type { ImageUsage } from '$plugins/custom-emoji';
-import { imageUsageEqual, PackImageReader } from '$plugins/custom-emoji';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import { useObjectURL } from '$hooks/useObjectURL';
-import type { TUploadAtom } from '$state/upload';
-import { createUploadAtom } from '$state/upload';
-import { replaceSpaceWithDash } from '$utils/common';
-import { SettingTile } from '$components/setting-tile';
-import * as css from './style.css';
-import { UsageSwitcher, useUsageStr } from './UsageSwitcher';
+import type { FormEventHandler, ReactNode } from "react";
+import { useMemo, useState } from "react";
+import { Badge, Box, Button, Chip, Input, Text } from "folds";
+import { sizedIcon, Trash } from "$components/icons/phosphor";
+import { mxcUrlToHttp } from "$utils/matrix";
+import type { ImageUsage } from "$plugins/custom-emoji";
+import { imageUsageEqual, PackImageReader } from "$plugins/custom-emoji";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import { useObjectURL } from "$hooks/useObjectURL";
+import type { TUploadAtom } from "$state/upload";
+import { createUploadAtom } from "$state/upload";
+import { replaceSpaceWithDash } from "$utils/common";
+import { SettingTile } from "$components/setting-tile";
+import { Image as MediaImage } from "$components/media";
+import * as css from "./style.css";
+import { UsageSwitcher, useUsageStr } from "./UsageSwitcher";
 
 type ImageTileProps = {
   defaultShortcode: string;
@@ -40,9 +41,9 @@ export function ImageTile({
   return (
     <SettingTile
       before={
-        <img
+        <MediaImage
           className={css.ImagePackImage}
-          src={mxcUrlToHttp(mx, image.url, useAuthentication) ?? ''}
+          src={mxcUrlToHttp(mx, image.url, useAuthentication) ?? ""}
           alt={image.shortcode}
           loading="lazy"
         />
@@ -56,13 +57,20 @@ export function ImageTile({
       }
       description={
         <Box as="span" gap="200">
-          {image.usage && getUsageStr(image.usage) !== getUsageStr(packUsage) && (
-            <Badge as="span" variant="Secondary" size="400" radii="300" outlined>
-              <Text as="span" size="L400">
-                {getUsageStr(image.usage)}
-              </Text>
-            </Badge>
-          )}
+          {image.usage &&
+            getUsageStr(image.usage) !== getUsageStr(packUsage) && (
+              <Badge
+                as="span"
+                variant="Secondary"
+                size="400"
+                radii="300"
+                outlined
+              >
+                <Text as="span" size="L400">
+                  {getUsageStr(image.usage)}
+                </Text>
+              </Badge>
+            )}
           {image.body}
         </Box>
       }
@@ -70,12 +78,12 @@ export function ImageTile({
         canEdit ? (
           <Box shrink="No" alignItems="Center" gap="200">
             <Chip
-              variant={deleted ? 'Critical' : 'Secondary'}
+              variant={deleted ? "Critical" : "Secondary"}
               fill="None"
               radii="Pill"
               onClick={() => onDeleteToggle?.(defaultShortcode)}
             >
-              {deleted ? <Text size="B300">Undo</Text> : sizedIcon(Trash, '50')}
+              {deleted ? <Text size="B300">Undo</Text> : sizedIcon(Trash, "50")}
             </Chip>
             {!deleted && (
               <Chip
@@ -102,7 +110,11 @@ export function ImageTileUpload({ file, children }: ImageTileUploadProps) {
   const uploadAtom = useMemo(() => createUploadAtom(file), [file]);
 
   return (
-    <SettingTile before={<img className={css.ImagePackImage} src={url} alt={file.name} />}>
+    <SettingTile
+      before={
+        <MediaImage className={css.ImagePackImage} src={url} alt={file.name} />
+      }
+    >
       {children(uploadAtom)}
     </SettingTile>
   );
@@ -133,7 +145,9 @@ export function ImageTileEdit({
     evt.preventDefault();
 
     const target = evt.target as HTMLFormElement | undefined;
-    const shortcodeInput = target?.shortcodeInput as HTMLInputElement | undefined;
+    const shortcodeInput = target?.shortcodeInput as
+      | HTMLInputElement
+      | undefined;
     const bodyInput = target?.bodyInput as HTMLTextAreaElement | undefined;
     if (!shortcodeInput || !bodyInput) return;
 
@@ -164,9 +178,9 @@ export function ImageTileEdit({
   return (
     <SettingTile
       before={
-        <img
+        <MediaImage
           className={css.ImagePackImage}
-          src={mxcUrlToHttp(mx, image.url, useAuthentication) ?? ''}
+          src={mxcUrlToHttp(mx, image.url, useAuthentication) ?? ""}
           alt={image.shortcode}
           loading="lazy"
         />
@@ -195,7 +209,11 @@ export function ImageTileEdit({
         </Box>
         <Box gap="200">
           <Box shrink="No" direction="Column">
-            <UsageSwitcher usage={unsavedUsage} onChange={setUnsavedUsages} canEdit />
+            <UsageSwitcher
+              usage={unsavedUsage}
+              onChange={setUnsavedUsages}
+              canEdit
+            />
           </Box>
           <Box grow="Yes" />
           <Button type="submit" variant="Success" size="300" radii="300">

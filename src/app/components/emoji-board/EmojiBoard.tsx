@@ -4,39 +4,40 @@ import type {
   MouseEventHandler,
   ReactNode,
   RefObject,
-} from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Box, config, Scroll } from 'folds';
-import { ClockCounterClockwise } from '$components/icons/phosphor';
-import FocusTrap from 'focus-trap-react';
-import { isKeyHotkey } from 'is-hotkey';
-import type { Room } from '$types/matrix-sdk';
-import type { PrimitiveAtom } from 'jotai';
-import { atom, useAtom, useSetAtom } from 'jotai';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import type { IEmoji } from '$plugins/emoji';
-import { emojiGroups, emojis } from '$plugins/emoji';
-import { preventScrollWithArrowKey } from '$utils/keyboard';
-import { useRelevantImagePacks } from '$hooks/useImagePacks';
-import { useMatrixClient } from '$hooks/useMatrixClient';
-import { useRecentEmoji } from '$hooks/useRecentEmoji';
-import { isUserId, mxcUrlToHttp } from '$utils/matrix';
-import { editableActiveElement, targetFromEvent } from '$utils/dom';
-import type { UseAsyncSearchOptions } from '$hooks/useAsyncSearch';
-import { useAsyncSearch } from '$hooks/useAsyncSearch';
-import { useDebounce } from '$hooks/useDebounce';
-import { useThrottle } from '$hooks/useThrottle';
-import { addRecentEmoji } from '$plugins/recent-emoji';
-import { useMediaAuthentication } from '$hooks/useMediaAuthentication';
-import type { ImagePack, PackImageReader } from '$plugins/custom-emoji';
-import { ImageUsage } from '$plugins/custom-emoji';
-import { getEmoticonSearchStr } from '$plugins/utils';
-import { VirtualTile } from '$components/virtualizer';
-import { useSetting } from '$state/hooks/settings';
-import { settingsAtom } from '$state/settings';
-import { useEmojiGroupIcons } from './useEmojiGroupIcons';
-import { useEmojiGroupLabels } from './useEmojiGroupLabels';
-import type { PreviewData } from './components';
+} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Box, config, Scroll } from "folds";
+import { ClockCounterClockwise } from "$components/icons/phosphor";
+import FocusTrap from "focus-trap-react";
+import { isKeyHotkey } from "is-hotkey";
+import type { Room } from "$types/matrix-sdk";
+import type { PrimitiveAtom } from "jotai";
+import { atom, useAtom, useSetAtom } from "jotai";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import type { IEmoji } from "$plugins/emoji";
+import { emojiGroups, emojis } from "$plugins/emoji";
+import { preventScrollWithArrowKey } from "$utils/keyboard";
+import { useRelevantImagePacks } from "$hooks/useImagePacks";
+import { useMatrixClient } from "$hooks/useMatrixClient";
+import { useRecentEmoji } from "$hooks/useRecentEmoji";
+import { isUserId, mxcUrlToHttp } from "$utils/matrix";
+import { editableActiveElement, targetFromEvent } from "$utils/dom";
+import type { UseAsyncSearchOptions } from "$hooks/useAsyncSearch";
+import { useAsyncSearch } from "$hooks/useAsyncSearch";
+import { useDebounce } from "$hooks/useDebounce";
+import { useThrottle } from "$hooks/useThrottle";
+import { addRecentEmoji } from "$plugins/recent-emoji";
+import { useMediaAuthentication } from "$hooks/useMediaAuthentication";
+import type { ImagePack, PackImageReader } from "$plugins/custom-emoji";
+import { ImageUsage } from "$plugins/custom-emoji";
+import { getEmoticonSearchStr } from "$plugins/utils";
+import { VirtualTile } from "$components/virtualizer";
+import { useSetting } from "$state/hooks/settings";
+import { Image as MediaImage } from "$components/media";
+import { settingsAtom } from "$state/settings";
+import { useEmojiGroupIcons } from "./useEmojiGroupIcons";
+import { useEmojiGroupLabels } from "./useEmojiGroupLabels";
+import type { PreviewData } from "./components";
 import {
   SearchInput,
   EmojiBoardTabs,
@@ -56,17 +57,17 @@ import {
   getEmojiItemInfo,
   EmojiGroup,
   EmojiBoardLayout,
-} from './components';
-import type { GifData } from './types';
-import { EmojiBoardTab, EmojiType } from './types';
-import { useClientConfig } from '$hooks/useClientConfig';
-import { useFavoriteGifs } from '$hooks/useFavoriteGifs';
+} from "./components";
+import type { GifData } from "./types";
+import { EmojiBoardTab, EmojiType } from "./types";
+import { useClientConfig } from "$hooks/useClientConfig";
+import { useFavoriteGifs } from "$hooks/useFavoriteGifs";
 
 /* oxlint-disable typescript/no-explicit-any */
 // TODO: type klipy api properly
 
-const RECENT_GROUP_ID = 'recent_group';
-const SEARCH_GROUP_ID = 'search_group';
+const RECENT_GROUP_ID = "recent_group";
+const SEARCH_GROUP_ID = "search_group";
 
 type EmojiGroupItem = {
   id: string;
@@ -90,7 +91,7 @@ const useGroups = (
   data: {
     gifs: GifData[];
     favorites: GifData[];
-  }
+  },
 ): [EmojiGroupItem[], StickerGroupItem[], GifGroupItem[]] => {
   const mx = useMatrixClient();
 
@@ -103,17 +104,18 @@ const useGroups = (
 
     g.push({
       id: RECENT_GROUP_ID,
-      name: 'Recent',
+      name: "Recent",
       items: recentEmojis,
     });
 
     imagePacks.forEach((pack) => {
       let label = pack.meta.name;
-      if (!label) label = isUserId(pack.id) ? 'Personal Pack' : mx.getRoom(pack.id)?.name;
+      if (!label)
+        label = isUserId(pack.id) ? "Personal Pack" : mx.getRoom(pack.id)?.name;
 
       g.push({
         id: pack.id,
-        name: label ?? 'Unknown',
+        name: label ?? "Unknown",
         items: pack
           .getImages(ImageUsage.Emoticon)
           .toSorted((a, b) => a.shortcode.localeCompare(b.shortcode)),
@@ -137,11 +139,12 @@ const useGroups = (
 
     imagePacks.forEach((pack) => {
       let label = pack.meta.name;
-      if (!label) label = isUserId(pack.id) ? 'Personal Pack' : mx.getRoom(pack.id)?.name;
+      if (!label)
+        label = isUserId(pack.id) ? "Personal Pack" : mx.getRoom(pack.id)?.name;
 
       g.push({
         id: pack.id,
-        name: label ?? 'Unknown',
+        name: label ?? "Unknown",
         items: pack
           .getImages(ImageUsage.Sticker)
           .toSorted((a, b) => a.shortcode.localeCompare(b.shortcode)),
@@ -155,8 +158,8 @@ const useGroups = (
     if (tab !== EmojiBoardTab.Gif) return [];
     return [
       {
-        id: 'gif_group',
-        name: 'GIFs',
+        id: "gif_group",
+        name: "GIFs",
         items: data.gifs,
       },
     ];
@@ -165,22 +168,28 @@ const useGroups = (
   return [emojiGroupItems, stickerGroupItems, gifGroupItems];
 };
 
-const useItemRenderer = (tab: EmojiBoardTab, saveStickerEmojiBandwidth: boolean) => {
+const useItemRenderer = (
+  tab: EmojiBoardTab,
+  saveStickerEmojiBandwidth: boolean,
+) => {
   const mx = useMatrixClient();
   const useAuthentication = useMediaAuthentication();
 
-  const renderItem = (item: IEmoji | PackImageReader | GifData, index: number) => {
+  const renderItem = (
+    item: IEmoji | PackImageReader | GifData,
+    index: number,
+  ) => {
     if (tab === EmojiBoardTab.Gif) {
       const gif = item as GifData;
 
       let initialGifUrl = gif.preview_url ?? gif.url;
-      let gifUrl = initialGifUrl.startsWith('mxc://')
-        ? (mxcUrlToHttp(mx, initialGifUrl, useAuthentication) ?? '')
+      let gifUrl = initialGifUrl.startsWith("mxc://")
+        ? (mxcUrlToHttp(mx, initialGifUrl, useAuthentication) ?? "")
         : initialGifUrl;
       const aspectRatio =
         gif.width && gif.height && gif.width > 0 && gif.height > 0
           ? `${gif.width} / ${gif.height}`
-          : '1 / 1';
+          : "1 / 1";
 
       return (
         <GifItem
@@ -192,18 +201,23 @@ const useItemRenderer = (tab: EmojiBoardTab, saveStickerEmojiBandwidth: boolean)
           gif={gif}
           style={{ aspectRatio }}
         >
-          <img
+          <MediaImage
             loading="lazy"
             alt=""
             aria-hidden
             src={gifUrl}
-            style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
           />
         </GifItem>
       );
     }
 
-    if ('unicode' in item) {
+    if ("unicode" in item) {
       return <EmojiItem key={item.unicode + index} emoji={item} />;
     }
 
@@ -275,20 +289,33 @@ function EmojiSidebar({
           <SidebarDivider />
           {packs.map((pack) => {
             let label = pack.meta.name;
-            if (!label) label = isUserId(pack.id) ? 'Personal Pack' : mx.getRoom(pack.id)?.name;
+            if (!label)
+              label = isUserId(pack.id)
+                ? "Personal Pack"
+                : mx.getRoom(pack.id)?.name;
 
             // limit width and height to 36 to prevent very large icons from breaking the layout, since custom emoji pack icons can be of any size
             // trying to get close to the render target size of the icons in the sidebar, which is around 24px
             const url = saveStickerEmojiBandwidth
-              ? mxcUrlToHttp(mx, pack.getAvatarUrl(usage) ?? '', useAuthentication, 36, 36)
-              : mxcUrlToHttp(mx, pack.getAvatarUrl(usage) ?? '', useAuthentication);
+              ? mxcUrlToHttp(
+                  mx,
+                  pack.getAvatarUrl(usage) ?? "",
+                  useAuthentication,
+                  36,
+                  36,
+                )
+              : mxcUrlToHttp(
+                  mx,
+                  pack.getAvatarUrl(usage) ?? "",
+                  useAuthentication,
+                );
 
             return (
               <ImageGroupIcon
                 key={pack.id}
                 active={activeGroupId === pack.id}
                 id={pack.id}
-                label={label ?? 'Unknown Pack'}
+                label={label ?? "Unknown Pack"}
                 url={url ?? undefined}
                 onClick={handleScrollToGroup}
               />
@@ -298,8 +325,8 @@ function EmojiSidebar({
       )}
       <SidebarStack
         style={{
-          position: 'sticky',
-          bottom: '-67%',
+          position: "sticky",
+          bottom: "-67%",
           zIndex: 1,
         }}
       >
@@ -347,20 +374,33 @@ function StickerSidebar({
       <SidebarStack>
         {packs.map((pack) => {
           let label = pack.meta.name;
-          if (!label) label = isUserId(pack.id) ? 'Personal Pack' : mx.getRoom(pack.id)?.name;
+          if (!label)
+            label = isUserId(pack.id)
+              ? "Personal Pack"
+              : mx.getRoom(pack.id)?.name;
 
           // limit width and height to 36 to prevent very large icons from breaking the layout, since custom emoji pack icons can be of any size
           // trying to get close to the render target size of the icons in the sidebar, which is around 24px
           const url = saveStickerEmojiBandwidth
-            ? mxcUrlToHttp(mx, pack.getAvatarUrl(usage) ?? '', useAuthentication, 36, 36)
-            : mxcUrlToHttp(mx, pack.getAvatarUrl(usage) ?? '', useAuthentication);
+            ? mxcUrlToHttp(
+                mx,
+                pack.getAvatarUrl(usage) ?? "",
+                useAuthentication,
+                36,
+                36,
+              )
+            : mxcUrlToHttp(
+                mx,
+                pack.getAvatarUrl(usage) ?? "",
+                useAuthentication,
+              );
 
           return (
             <ImageGroupIcon
               key={pack.id}
               active={activeGroupId === pack.id}
               id={pack.id}
-              label={label ?? 'Unknown Pack'}
+              label={label ?? "Unknown Pack"}
               url={url ?? undefined}
               onClick={handleScrollToGroup}
             />
@@ -395,7 +435,7 @@ function EmojiGroupHolder({
         shortcode: emojiInfo.shortcode,
       });
     },
-    [setPreviewData]
+    [setPreviewData],
   );
 
   const throttleEmojiHover = useThrottle(handleEmojiPreview, {
@@ -404,7 +444,9 @@ function EmojiGroupHolder({
   });
 
   const handleEmojiHover: MouseEventHandler = (evt) => {
-    const targetEl = targetFromEvent(evt.nativeEvent, 'button') as HTMLButtonElement | undefined;
+    const targetEl = targetFromEvent(evt.nativeEvent, "button") as
+      | HTMLButtonElement
+      | undefined;
     if (!targetEl) return;
     throttleEmojiHover(targetEl);
   };
@@ -415,7 +457,12 @@ function EmojiGroupHolder({
   };
 
   return (
-    <Scroll ref={contentScrollRef} size="400" onKeyDown={preventScrollWithArrowKey} hideTrack>
+    <Scroll
+      ref={contentScrollRef}
+      size="400"
+      onKeyDown={preventScrollWithArrowKey}
+      hideTrack
+    >
       <Box
         onClick={onGroupItemClick}
         onMouseMove={handleEmojiHover}
@@ -428,7 +475,10 @@ function EmojiGroupHolder({
   );
 }
 
-const DefaultEmojiPreview: PreviewData = { key: '🙂', shortcode: 'slight_smile' };
+const DefaultEmojiPreview: PreviewData = {
+  key: "🙂",
+  shortcode: "slight_smile",
+};
 
 const SEARCH_OPTIONS: UseAsyncSearchOptions = {
   limit: 1000,
@@ -471,18 +521,27 @@ export function EmojiBoard({
   isFullWidth,
 }: Readonly<EmojiBoardProps>) {
   const mx = useMatrixClient();
-  const [saveStickerEmojiBandwidth] = useSetting(settingsAtom, 'saveStickerEmojiBandwidth');
-  const [showGifPicker] = useSetting(settingsAtom, 'enableGifPicker');
+  const [saveStickerEmojiBandwidth] = useSetting(
+    settingsAtom,
+    "saveStickerEmojiBandwidth",
+  );
+  const [showGifPicker] = useSetting(settingsAtom, "enableGifPicker");
 
   const emojiTab = tab === EmojiBoardTab.Emoji;
   const gifTab = tab === EmojiBoardTab.Gif;
   const usage = emojiTab ? ImageUsage.Emoticon : ImageUsage.Sticker;
 
   const previewAtom = useMemo(
-    () => createPreviewDataAtom(tab === EmojiBoardTab.Emoji ? DefaultEmojiPreview : undefined),
-    [tab]
+    () =>
+      createPreviewDataAtom(
+        tab === EmojiBoardTab.Emoji ? DefaultEmojiPreview : undefined,
+      ),
+    [tab],
   );
-  const activeGroupIdAtom = useMemo(() => atom<string | undefined>(undefined), []);
+  const activeGroupIdAtom = useMemo(
+    () => atom<string | undefined>(undefined),
+    [],
+  );
   const setActiveGroupId = useSetAtom(activeGroupIdAtom);
   const imagePacks = useRelevantImagePacks(usage, imagePackRooms);
   const favoriteGifs = useFavoriteGifs().gifs as GifData[];
@@ -497,17 +556,18 @@ export function EmojiBoard({
   const [emojiResult, emojiSearch, resetEmojiSearch] = useAsyncSearch(
     searchList,
     getEmoticonSearchStr,
-    SEARCH_OPTIONS
+    SEARCH_OPTIONS,
   );
 
   const [gifResult, gifSearch, resetGifSearch] = useAsyncSearch(
     favoriteGifs,
     getGifName,
-    SEARCH_OPTIONS
+    SEARCH_OPTIONS,
   );
 
   const searchedItems = emojiResult?.items.slice(0, 100);
-  const searchedGifItems = gifResult?.items.slice(0, 100) ?? favoriteGifs.toReversed();
+  const searchedGifItems =
+    gifResult?.items.slice(0, 100) ?? favoriteGifs.toReversed();
 
   function useGifSearch() {
     const [gifs, setGifs] = useState<{
@@ -520,7 +580,7 @@ export function EmojiBoard({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const clientConfig = useClientConfig();
-    const klipyApiKey = clientConfig.gifs?.klipyApiKey ?? '';
+    const klipyApiKey = clientConfig.gifs?.klipyApiKey ?? "";
 
     const parseKlipyResult = useCallback((klipyResult: any): GifData => {
       const SIZE_LIMIT = 3 * 1024 * 1024; // 3MB
@@ -546,13 +606,13 @@ export function EmojiBoard({
 
       return {
         id: klipyResult.id,
-        title: klipyResult.title || 'GIF',
-        url: fullRes?.url || '',
-        preview_url: preview?.url || fullRes?.url || '',
+        title: klipyResult.title || "GIF",
+        url: fullRes?.url || "",
+        preview_url: preview?.url || fullRes?.url || "",
         width,
         height,
         size: fullRes?.size || preview?.size || 0,
-        mimetype: 'image/gif',
+        mimetype: "image/gif",
       };
     }, []);
 
@@ -570,10 +630,10 @@ export function EmojiBoard({
         gifSearch(trimmedQuery);
 
         try {
-          const url = new URL('https://api.klipy.com');
+          const url = new URL("https://api.klipy.com");
           url.pathname = `/api/v1/${klipyApiKey}/gifs/search`;
-          url.searchParams.set('q', trimmedQuery);
-          url.searchParams.set('per_page', '50'); // TODO: infinite scroll?
+          url.searchParams.set("q", trimmedQuery);
+          url.searchParams.set("per_page", "50"); // TODO: infinite scroll?
 
           const response = await fetch(url.toString());
 
@@ -597,7 +657,7 @@ export function EmojiBoard({
             throw new Error(`HTTP ${response.status}`);
           }
         } catch {
-          setError('Failed to search GIFs');
+          setError("Failed to search GIFs");
           setGifs((old) => ({
             ...old,
             gifs: [],
@@ -606,14 +666,23 @@ export function EmojiBoard({
           setLoading(false);
         }
       },
-      [parseKlipyResult, klipyApiKey]
+      [parseKlipyResult, klipyApiKey],
     );
 
     return { gifs, loading, error, searchGifs };
   }
 
-  const { gifs, loading: gifsLoading, error: gifsError, searchGifs } = useGifSearch();
-  const [emojiGroupItems, stickerGroupItems, gifGroupItems] = useGroups(tab, imagePacks, gifs);
+  const {
+    gifs,
+    loading: gifsLoading,
+    error: gifsError,
+    searchGifs,
+  } = useGifSearch();
+  const [emojiGroupItems, stickerGroupItems, gifGroupItems] = useGroups(
+    tab,
+    imagePacks,
+    gifs,
+  );
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(true);
   const groupsByTab = {
     [EmojiBoardTab.Emoji]: emojiGroupItems,
@@ -622,16 +691,16 @@ export function EmojiBoard({
       showFavoritesOnly && gifs.favorites.length > 0
         ? [
             {
-              id: 'favorites_group',
-              name: 'Favorites',
+              id: "favorites_group",
+              name: "Favorites",
               items: searchedGifItems,
             },
           ]
         : searchedGifItems.length > 0
           ? [
               {
-                id: 'favorites_group',
-                name: 'Favorites',
+                id: "favorites_group",
+                name: "Favorites",
                 items: searchedGifItems,
               },
             ].concat(gifGroupItems)
@@ -658,9 +727,9 @@ export function EmojiBoard({
           resetEmojiSearch();
         }
       },
-      [emojiSearch, resetEmojiSearch, searchGifs, resetGifSearch, tab]
+      [emojiSearch, resetEmojiSearch, searchGifs, resetGifSearch, tab],
     ),
-    { wait: 200 }
+    { wait: 200 },
   );
 
   const contentScrollRef = useRef<HTMLDivElement>(null);
@@ -695,7 +764,7 @@ export function EmojiBoard({
   const vItems = virtualizer.getVirtualItems();
 
   const handleGroupItemClick: MouseEventHandler = (evt) => {
-    const targetEl = targetFromEvent(evt.nativeEvent, 'button');
+    const targetEl = targetFromEvent(evt.nativeEvent, "button");
     const emojiInfo = targetEl && getEmojiItemInfo(targetEl);
     if (!emojiInfo) return;
 
@@ -712,9 +781,9 @@ export function EmojiBoard({
       onStickerSelect?.(emojiInfo.data, emojiInfo.shortcode, emojiInfo.label);
     }
     if (emojiInfo.type === EmojiType.Gif) {
-      const gifDataStr = targetEl.getAttribute('data-gif-data');
+      const gifDataStr = targetEl.getAttribute("data-gif-data");
       const gifData = gifDataStr ? JSON.parse(gifDataStr) : null;
-      const isSpoiler = targetEl.getAttribute('data-gif-spoiler') === 'true';
+      const isSpoiler = targetEl.getAttribute("data-gif-spoiler") === "true";
       onGifSelect?.(gifData, isSpoiler);
     }
     if (!evt.altKey && !evt.shiftKey) requestClose();
@@ -727,7 +796,7 @@ export function EmojiBoard({
 
   const handleScrollToGroup = (groupId: string) => {
     const groupIndex = groups.findIndex((group) => group.id === groupId);
-    virtualizer.scrollToIndex(groupIndex, { align: 'start' });
+    virtualizer.scrollToIndex(groupIndex, { align: "start" });
   };
 
   // sync active sidebar tab with scroll
@@ -736,7 +805,9 @@ export function EmojiBoard({
     if (scrollElement) {
       const scrollTop = scrollElement.offsetTop + scrollElement.scrollTop;
       const offsetTop = virtualBaseRef.current?.offsetTop ?? 0;
-      const inViewVItem = vItems.find((vItem) => scrollTop < offsetTop + vItem.end);
+      const inViewVItem = vItems.find(
+        (vItem) => scrollTop < offsetTop + vItem.end,
+      );
 
       const group = inViewVItem ? groups[inViewVItem?.index] : undefined;
       setActiveGroupId(group?.id);
@@ -754,7 +825,7 @@ export function EmojiBoard({
   // reset scroll position on tab change
   useEffect(() => {
     if (groups.length > 0) {
-      virtualizer.scrollToIndex(0, { align: 'start' });
+      virtualizer.scrollToIndex(0, { align: "start" });
     }
   }, [tab, virtualizer, groups.length]);
 
@@ -771,16 +842,20 @@ export function EmojiBoard({
           return false;
         },
         isKeyForward: (evt: KeyboardEvent) =>
-          !editableActiveElement() && isKeyHotkey(['arrowdown', 'arrowright'], evt),
+          !editableActiveElement() &&
+          isKeyHotkey(["arrowdown", "arrowright"], evt),
         isKeyBackward: (evt: KeyboardEvent) =>
-          !editableActiveElement() && isKeyHotkey(['arrowup', 'arrowleft'], evt),
+          !editableActiveElement() &&
+          isKeyHotkey(["arrowup", "arrowleft"], evt),
         escapeDeactivates: true,
       }}
     >
       <EmojiBoardLayout
         header={
           <Box direction="Column" gap="200">
-            {onTabChange && <EmojiBoardTabs tab={tab} onTabChange={onTabChange} />}
+            {onTabChange && (
+              <EmojiBoardTabs tab={tab} onTabChange={onTabChange} />
+            )}
             <SearchInput
               key={tab}
               query={emojiResult?.query}
@@ -822,15 +897,19 @@ export function EmojiBoard({
             {tab !== EmojiBoardTab.Gif && searchedItems && (
               <EmojiGroup
                 id={SEARCH_GROUP_ID}
-                label={searchedItems.length ? 'Search Results' : 'No Results found'}
+                label={
+                  searchedItems.length ? "Search Results" : "No Results found"
+                }
               >
-                {searchedItems.map((element, index) => renderItem(element, index))}
+                {searchedItems.map((element, index) =>
+                  renderItem(element, index),
+                )}
               </EmojiGroup>
             )}
             <div
               ref={virtualBaseRef}
               style={{
-                position: 'relative',
+                position: "relative",
                 height: virtualizer.getTotalSize(),
               }}
             >
@@ -844,19 +923,28 @@ export function EmojiBoard({
                     ref={virtualizer.measureElement}
                     key={vItem.index}
                   >
-                    <EmojiGroup key={group.id} id={group.id} label={group.name} isGifGroup={gifTab}>
+                    <EmojiGroup
+                      key={group.id}
+                      id={group.id}
+                      label={group.name}
+                      isGifGroup={gifTab}
+                    >
                       {group.items.map(renderItem)}
                     </EmojiGroup>
                   </VirtualTile>
                 );
               })}
             </div>
-            {tab === EmojiBoardTab.Sticker && groups.length === 0 && <NoStickerPacks />}
+            {tab === EmojiBoardTab.Sticker && groups.length === 0 && (
+              <NoStickerPacks />
+            )}
             {gifTab && (
               <GifStatus
                 loading={gifsLoading}
                 error={gifsError}
-                isEmpty={groups.flatMap((v) => v.items.map(() => 'gif')).length === 0}
+                isEmpty={
+                  groups.flatMap((v) => v.items.map(() => "gif")).length === 0
+                }
               />
             )}
           </EmojiGroupHolder>
