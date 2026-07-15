@@ -27,6 +27,7 @@ import {
   phosphorSizeRem,
   sizedIcon,
 } from "$components/icons/phosphor";
+import { Image as MediaImage } from "$components/media";
 import { useImageGestures } from "$hooks/useImageGestures";
 import { useSetting } from "$state/hooks/settings";
 import { isPixelatedRendering, settingsAtom } from "$state/settings";
