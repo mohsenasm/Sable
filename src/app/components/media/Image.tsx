@@ -131,6 +131,8 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       return (
         <DotLottieReact
           {...lottieProps}
+          height={lottieProps.height}
+          width={lottieProps.height}
           // TODO: this doesn't work properly for inline emote icons
           className={classNames(
             css.Image,
