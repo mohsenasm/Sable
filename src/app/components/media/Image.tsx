@@ -1,9 +1,4 @@
-import type {
-  ComponentProps,
-  ImgHTMLAttributes,
-  PointerEvent as ReactPointerEvent,
-  SyntheticEvent,
-} from "react";
+import type { ComponentProps, ImgHTMLAttributes } from "react";
 import { forwardRef, useEffect, useState } from "react";
 import classNames from "classnames";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -123,7 +118,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(
       return () => {
         cancelled = true;
       };
-    }, [src]);
+    }, [src, onLoad]);
 
     const shouldRenderLottie = typeof resolvedLottieSrc === "string";
 
