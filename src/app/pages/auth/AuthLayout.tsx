@@ -35,6 +35,7 @@ import { ServerPicker } from "./ServerPicker";
 import * as css from "./styles.css";
 import { AuthFooter } from "./AuthFooter";
 import { usePathWithOrigin } from "$hooks/usePathWithOrigin";
+import { Image as MediaImage } from "$components/media";
 
 const currentAuthPath = (pathname: string): string => {
   if (matchPath(LOGIN_PATH, pathname)) {

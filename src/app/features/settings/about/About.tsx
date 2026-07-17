@@ -11,6 +11,7 @@ import { SequenceCardStyle } from "$features/settings/styles.css";
 import { Method } from "$types/matrix-sdk";
 import { useOpenBugReportModal } from "$state/hooks/bugReportModal";
 import { SettingsSectionPage } from "../SettingsSectionPage";
+import { Image as MediaImage } from "$components/media";
 
 type VersionResult =
   | { error: { message: string } }

@@ -39,6 +39,7 @@ import * as css from "./style.css";
 import type { RoomBannerContent } from "$types/matrix-sdk-events";
 import { CustomStateEvent } from "$types/matrix/room";
 import colorMXID from "$utils/colorMXID";
+import { Image as MediaImage } from "$components/media";
 
 type GridColumnCount = "1" | "2" | "3";
 const getGridColumnCount = (gridWidth: number): GridColumnCount => {

@@ -144,6 +144,7 @@ import { ImageViewer } from "$components/image-viewer";
 import * as css from "./styles.css";
 import { isResizingSidebarAtom } from "$state/isResizingSidebar";
 import { UserQuickTools } from "../sidebar/UserQuickTools";
+import { Image as MediaImage } from "$components/media";
 
 const debugLog = createDebugLogger("Space");
 
