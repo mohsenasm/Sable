@@ -36,6 +36,7 @@ import { useTimeoutToggle } from '$hooks/useTimeoutToggle';
 import { getSettingsLinkChipLabel, parseSettingsLink } from '$features/settings/settingsLink';
 import { ClientSideHoverFreeze } from '$components/ClientSideHoverFreeze';
 import { CodeHighlightRenderer } from '$components/code-highlight';
+import { Image as MediaImage } from '$components/media';
 import {
   isRedundantMatrixToAnchorText,
   parseMatrixToRoom,
@@ -558,10 +559,10 @@ export function CodeBlock({
 function FallbackImg({
   fallback,
   ...props
-}: ComponentPropsWithoutRef<'img'> & { fallback: ReactNode }) {
+}: ComponentPropsWithoutRef<typeof MediaImage> & { fallback: ReactNode }) {
   const [failed, setFailed] = useState(false);
   if (failed) return <>{fallback}</>;
-  return <img {...props} onError={() => setFailed(true)} />;
+  return <MediaImage {...props} onError={() => setFailed(true)} />;
 }
 
 export const getReactCustomHtmlParser = (

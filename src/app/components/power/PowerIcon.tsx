@@ -1,4 +1,5 @@
 import { isJumboEmojiText } from '$utils/emojiDetection';
+import { Image as MediaImage } from '$components/media';
 import * as css from './style.css';
 
 type PowerIconProps = css.PowerIconVariants & {
@@ -25,5 +26,5 @@ export function PowerIcon({ size, iconSrc, name }: PowerIconProps) {
   const safeIconUrl = getSafeIconUrl(iconSrc);
   if (!safeIconUrl) return null;
 
-  return <img className={css.PowerIcon({ size })} src={safeIconUrl} alt={name} />;
+  return <MediaImage className={css.PowerIcon({ size })} src={safeIconUrl} alt={name} />;
 }

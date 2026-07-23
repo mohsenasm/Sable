@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Box, IconButton, Text } from 'folds';
 import { sizedIcon, X } from '$components/icons/phosphor';
 import { createLogger } from '$utils/debug';
+import { Image as MediaImage } from '$components/media';
 import type { InAppBannerNotification } from '$state/sessions';
 import { inAppBannerAtom } from '$state/sessions';
 import * as css from './NotificationBanner.css';
@@ -119,7 +120,7 @@ function BannerItem({ notification, onDismiss }: BannerItemProps) {
       onMouseLeave={handleMouseLeave}
     >
       {notification.icon && (
-        <img
+        <MediaImage
           src={notification.icon}
           alt=""
           className={css.BannerIcon}

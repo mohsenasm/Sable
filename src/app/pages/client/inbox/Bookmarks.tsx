@@ -81,7 +81,7 @@ import { useRoomEvent } from '$hooks/useRoomEvent';
 import type { HTMLReactParserOptions } from 'html-react-parser';
 import type { Opts } from 'linkifyjs';
 import { ImageViewer } from '$components/image-viewer';
-import { Image } from '$components/media';
+import { Image as MediaImage } from '$components/media';
 import { EncryptedContent } from '$features/room/message';
 import * as customHtmlCss from '$styles/CustomHtml.css';
 import type { IImageContent } from '$types/matrix/common';
@@ -222,8 +222,8 @@ type bookmarkRendererContext = {
   linkifyOpts: Opts;
 };
 
-function BookmarkLazyImage(props: ComponentProps<typeof Image>) {
-  return <Image {...props} loading="lazy" />;
+function BookmarkLazyImage(props: ComponentProps<typeof MediaImage>) {
+  return <MediaImage {...props} loading="lazy" />;
 }
 
 function renderBookmarkStickerImageContent(

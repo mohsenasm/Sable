@@ -64,7 +64,7 @@ import {
 import { RenderMessageContent } from '$components/RenderMessageContent';
 import { useSetting } from '$state/hooks/settings';
 import { settingsAtom } from '$state/settings';
-import { Image } from '$components/media';
+import { Image as MediaImage } from '$components/media';
 import { ImageViewer } from '$components/image-viewer';
 import type { GetContentCallback } from '$types/matrix/room';
 
@@ -212,8 +212,8 @@ type NotificationRendererContext = {
   linkifyOpts: LinkifyOpts;
 };
 
-function NotificationLazyImage(props: ComponentProps<typeof Image>) {
-  return <Image {...props} loading="lazy" />;
+function NotificationLazyImage(props: ComponentProps<typeof MediaImage>) {
+  return <MediaImage {...props} loading="lazy" />;
 }
 
 function renderNotificationStickerImageContent(

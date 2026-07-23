@@ -4,6 +4,7 @@ import type { MatrixClient } from '$types/matrix-sdk';
 import { menuIcon, Warning } from '$components/icons/phosphor';
 import { scaleSystemEmoji } from '$plugins/react-custom-html-parser';
 import { mxcUrlToHttp } from '$utils/matrix';
+import { Image as MediaImage } from '$components/media';
 import * as css from './Reaction.css';
 
 type ReactionKeyInlineProps = {
@@ -42,7 +43,7 @@ export function ReactionKeyInline({
     }
 
     return (
-      <img
+      <MediaImage
         className={css.ReactionImg}
         src={mxcUrlToHttp(mx, reactionKey, useAuthentication) ?? reactionKey}
         alt={shortcode ?? 'reaction'}

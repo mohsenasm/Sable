@@ -11,6 +11,7 @@ import { SequenceCardStyle } from '$features/settings/styles.css';
 import { Method } from '$types/matrix-sdk';
 import { useOpenBugReportModal } from '$state/hooks/bugReportModal';
 import { SettingsSectionPage } from '../SettingsSectionPage';
+import { Image as MediaImage } from '$components/media';
 
 type VersionResult =
   | { error: { message: string } }
@@ -189,7 +190,7 @@ export function About({ requestBack, requestClose }: Readonly<AboutProps>) {
             <Box direction="Column" gap="700">
               <Box gap="400">
                 <Box shrink="No">
-                  <img
+                  <MediaImage
                     style={{ width: toRem(60), height: toRem(60) }}
                     src={LogoSVG}
                     alt="Sable logo"

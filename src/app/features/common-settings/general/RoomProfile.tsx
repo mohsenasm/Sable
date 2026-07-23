@@ -32,6 +32,7 @@ import classNames from 'classnames';
 import type { MatrixError, StateEvents } from '$types/matrix-sdk';
 import { JoinRule, EventType } from '$types/matrix-sdk';
 import { SequenceCard } from '$components/sequence-card';
+import { Image as MediaImage } from '$components/media';
 import { SequenceCardStyle } from '$features/room-settings/styles.css';
 import { useRoom } from '$hooks/useRoom';
 import { useRoomAvatar, useRoomJoinRule, useRoomName, useRoomTopic } from '$hooks/useRoomMeta';
@@ -400,7 +401,7 @@ function RoomBannerEdit({ bannerURI, permissions }: Readonly<ProfileProps>) {
           }}
         >
           {previewUrl ? (
-            <img
+            <MediaImage
               src={previewUrl}
               key={previewUrl}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}

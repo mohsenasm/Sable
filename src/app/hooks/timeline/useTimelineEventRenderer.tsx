@@ -50,7 +50,7 @@ import {
   ReactionKeyInline,
   Time,
 } from '$components/message';
-import { Image } from '$components/media';
+import { Image as MediaImage } from '$components/media';
 import { ImageViewer } from '$components/image-viewer';
 import { RenderMessageContent } from '$components/RenderMessageContent';
 import { ClientSideHoverFreeze } from '$components/ClientSideHoverFreeze';
@@ -819,11 +819,11 @@ export function useTimelineEventRenderer({
                             if (!autoplayStickers && p.src) {
                               return (
                                 <ClientSideHoverFreeze src={p.src}>
-                                  <Image {...p} loading="lazy" />
+                                  <MediaImage {...p} loading="lazy" />
                                 </ClientSideHoverFreeze>
                               );
                             }
-                            return <Image {...p} loading="lazy" />;
+                            return <MediaImage {...p} loading="lazy" />;
                           }}
                           renderViewer={(p) => <ImageViewer {...p} />}
                         />
@@ -989,11 +989,11 @@ export function useTimelineEventRenderer({
                       if (!autoplayStickers && p.src) {
                         return (
                           <ClientSideHoverFreeze src={p.src}>
-                            <Image {...p} loading="lazy" />
+                            <MediaImage {...p} loading="lazy" />
                           </ClientSideHoverFreeze>
                         );
                       }
-                      return <Image {...p} loading="lazy" />;
+                      return <MediaImage {...p} loading="lazy" />;
                     }}
                     renderViewer={(p) => <ImageViewer {...p} />}
                   />

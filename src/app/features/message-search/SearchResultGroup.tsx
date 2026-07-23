@@ -32,7 +32,7 @@ import {
   type RenderImageContentProps,
 } from '$components/message';
 import { RenderMessageContent } from '$components/RenderMessageContent';
-import { Image } from '$components/media';
+import { Image as MediaImage } from '$components/media';
 import { ImageViewer } from '$components/image-viewer';
 import * as customHtmlCss from '$styles/CustomHtml.css';
 import { RoomAvatar, RoomIcon } from '$components/room-avatar';
@@ -72,8 +72,8 @@ type SearchResultRendererContext = {
   highlightRegex: RegExp | undefined;
 };
 
-function LazyImage(props: ComponentProps<typeof Image>) {
-  return <Image {...props} loading="lazy" />;
+function LazyImage(props: ComponentProps<typeof MediaImage>) {
+  return <MediaImage {...props} loading="lazy" />;
 }
 
 function renderSearchStickerImageContent(

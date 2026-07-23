@@ -76,7 +76,7 @@ import { RenderMessageContent } from '$components/RenderMessageContent';
 import { useSetting } from '$state/hooks/settings';
 import { settingsAtom } from '$state/settings';
 import * as customHtmlCss from '$styles/CustomHtml.css';
-import { Image } from '$components/media';
+import { Image as MediaImage } from '$components/media';
 import { ImageViewer } from '$components/image-viewer';
 import { useRoomNavigate } from '$hooks/useRoomNavigate';
 import { VirtualTile } from '$components/virtualizer';
@@ -300,8 +300,8 @@ type PinMenuRendererContext = {
   linkifyOpts: LinkifyOpts;
 };
 
-function PinMenuLazyImage(props: ComponentProps<typeof Image>) {
-  return <Image {...props} loading="lazy" />;
+function PinMenuLazyImage(props: ComponentProps<typeof MediaImage>) {
+  return <MediaImage {...props} loading="lazy" />;
 }
 
 function renderPinMenuStickerImageContent(

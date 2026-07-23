@@ -111,6 +111,7 @@ import { reportMediaLoadFailure } from '$utils/mediaLoadDiagnostics';
 import * as css from './styles.css';
 import { isResizingSidebarAtom } from '$state/isResizingSidebar';
 import { UserQuickTools } from '../sidebar/UserQuickTools';
+import { Image as MediaImage } from '$components/media';
 
 const debugLog = createDebugLogger('Space');
 
@@ -389,7 +390,7 @@ function SpaceHeader({ hideText, mx }: { hideText?: boolean; mx: MatrixClient })
                   }
                 }}
               >
-                <img
+                <MediaImage
                   className={css.RoomCoverImage}
                   src={bannerURI}
                   alt=""
