@@ -40,6 +40,7 @@ import { ModalWide } from '$styles/Modal.css';
 import type { UploadSuccess } from '$state/upload';
 import { createUploadAtom } from '$state/upload';
 import { CompactUploadCardRenderer } from '$components/upload-card';
+import { Image as MediaImage } from '$components/media';
 import { useCapabilities } from '$hooks/useCapabilities';
 import { profilesCacheAtom } from '$state/userRoomProfile';
 import { SequenceCardStyle } from '$features/settings/styles.css';
@@ -313,7 +314,7 @@ function ProfileBanner({ profile }: Readonly<Pick<ProfileProps, 'profile'>>) {
           }}
         >
           {previewUrl ? (
-            <img
+            <MediaImage
               src={previewUrl}
               key={previewUrl}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}

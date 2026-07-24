@@ -27,6 +27,7 @@ import { useSableCosmetics } from '$hooks/useSableCosmetics';
 import { useNickname } from '$hooks/useNickname';
 import { useRenderableMediaUrl } from '$hooks/useRenderableMediaUrl';
 import { ImageViewer } from '$components/image-viewer';
+import { Image as MediaImage } from '$components/media';
 import { AvatarPresence, PresenceBadge } from '$components/presence';
 import { UserAvatar } from '$components/user-avatar';
 import {
@@ -83,7 +84,7 @@ export function UserHero({
   const bannerClasses = classNames(css.UserHeroCover, isFallbackCover && css.UserHeroCoverFallback);
 
   const renderCoverImage = () => (
-    <img
+    <MediaImage
       className={classNames(css.UserHeroCover, isFallbackCover && css.UserHeroCoverFallback)}
       src={coverUrl}
       alt={`${userId} cover`}

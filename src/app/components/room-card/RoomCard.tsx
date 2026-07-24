@@ -40,6 +40,7 @@ import type { RoomBannerContent } from '$types/matrix-sdk-events';
 import { CustomStateEvent } from '$types/matrix/room';
 import colorMXID from '$utils/colorMXID';
 import { reportMediaLoadFailure } from '$utils/mediaLoadDiagnostics';
+import { Image as MediaImage } from '$components/media';
 
 type GridColumnCount = '1' | '2' | '3';
 const getGridColumnCount = (gridWidth: number): GridColumnCount => {
@@ -234,7 +235,7 @@ export const RoomCard = as<'div', RoomCardProps>(
               }}
             />
           ) : (
-            <img
+            <MediaImage
               className={css.RoomCardBanner({ trueBanner: !!bannerURI })}
               src={bannerURI || avatar || undefined}
               alt={`${name} cover`}

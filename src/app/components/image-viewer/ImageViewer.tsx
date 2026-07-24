@@ -26,6 +26,7 @@ import {
   phosphorSizeRem,
   sizedIcon,
 } from '$components/icons/phosphor';
+import { Image as MediaImage } from '$components/media';
 import { useImageGestures } from '$hooks/useImageGestures';
 import { useDismissOnBack } from '$utils/androidBack';
 import { useSetting } from '$state/hooks/settings';
@@ -343,7 +344,7 @@ export const ImageViewer = as<'div', ImageViewerProps>(
             onPointerDown={onPointerDown}
             onContextMenu={handleContextMenu}
           >
-            <img
+            <MediaImage
               className={classNames(css.ImageViewerImg, isPixelated && css.ImageViewerImgPixelated)}
               draggable={false}
               data-gestures="ignore"
